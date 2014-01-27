@@ -9,7 +9,7 @@
 //TODO testing before turn into something simpler, like just a picture, or a RPi LED, based on whether can bike both ways
 //TODO better error handling if 6am not available
 //WBNice user configuration for acceptable weather, max/min temp, timeslot to choose, 
-//HTML5 local storage to store that, API
+//HTML5 local storage to store that (is a cookie enough?), API
 
 define('HOUR_SLOTS', 3);
 
@@ -33,6 +33,7 @@ $bikingWeather = array (
 "light snow showers" => false,
 "mist" => true,
 "misty" => true,
+"partly cloudy" => true,
 "sleet" => false,
 "sleet showers" => false,
 "sunny" => true,
@@ -63,7 +64,7 @@ function getWeatherWords($xpath, $index) {
 	if ($weatherWords) {
 		return($weatherWords);
 	} else {
-		return "";
+		return "(not found)";
 	}
 	
 }
@@ -100,8 +101,9 @@ function getTemperature($xpath, $dom, $index) {
         <h1>
         <?php
 		print $weatherWords." ".$temperature."&deg;C - ";
-		
-		if ($bikingWeather[strtolower($weatherWords)] && ($temperature >= MIN_TEMP) && ($temperature <= MAX_TEMP)) {
+		if (!array_key_exists(strtolower($weatherWords),$bikingWeather)) {
+			print "Don't know about $weatherWords";
+		} else if ($bikingWeather[strtolower($weatherWords)] && ($temperature >= MIN_TEMP) && ($temperature <= MAX_TEMP)) {
 			print "bike to work, ";
 		} else {
 			print "don't bike to work, ";
@@ -110,7 +112,9 @@ function getTemperature($xpath, $dom, $index) {
 		$weatherWords = getWeatherWords($xpath, $index);
 		$temperature = getTemperature($xpath, $dom, $index);
 		print $weatherWords." ".$temperature."&deg;C - ";
-		if ($bikingWeather[strtolower($weatherWords)] && ($temperature >= MIN_TEMP) && ($temperature <= MAX_TEMP)) {
+		if (!array_key_exists(strtolower($weatherWords),$bikingWeather)) {
+			print "Don't know about $weatherWords";
+		} else if ($bikingWeather[strtolower($weatherWords)] && ($temperature >= MIN_TEMP) && ($temperature <= MAX_TEMP)) {
 			print "bike home";
 		} else {
 			print "don't bike home";
