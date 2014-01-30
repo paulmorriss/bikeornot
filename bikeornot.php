@@ -11,10 +11,22 @@
 //WBNice user configuration for acceptable weather, max/min temp, timeslot to choose, 
 //HTML5 local storage to store that (is a cookie enough?), API
 
-define('HOUR_SLOTS', 3);
+//Gap between hours on page, started off as 3, but then page changed
+define('HOUR_SLOTS', 1);
+
+//URL parameter names
+define ('MIN_TEMP_PARAM',"mintemp");
+define ('MAX_TEMP_PARAM',"maxtemp");
+define ('POSTCODE_PARAM',"postcode");
+define ('GOOD_WEATHER_PARAM', "goodweather");
+
+//Defaults
+define ('DEFAULT_MIN_TEMP', 2);
+define ('DEFAULT_MAX_TEMP', 25);
+define ('DEFAULT_POSTCODE', "hp14");
 
 // Which weather is biking weather
-$bikingWeather = array (
+$bikingWeatherDefault = array (
 "clear sky" => true,
 "cloudy" => true,
 "drizzle" => false,
@@ -25,6 +37,7 @@ $bikingWeather = array (
 "heavy rain shower" => false,
 "heavy showers" => false,
 "heavy snow" => false,
+"light cloud" => true,
 "light rain" => false,
 "light rain shower" => false,
 "light showers" => false,
@@ -43,9 +56,6 @@ $bikingWeather = array (
 "white cloud" => true
 );
 
-define ('MIN_TEMP', 2);
-define ('MAX_TEMP', 25);
-
 function getIndex($startHour, $requiredHour) {
 	//Gets the index in the table containing weather symbols and temps
 	//The images with the words as a title, are in a table with three hour increments
@@ -61,6 +71,7 @@ function getIndex($startHour, $requiredHour) {
 function getWeatherWords($xpath, $index) {
 	//Find the image for the weather and get the title attribute
 	$weatherWords = $xpath->query('//*[@id="hourly"]/div[3]/table/tbody/tr[1]/td['.strval($index).']/span/img/@title')->item(0)->nodeValue;
+
 	if ($weatherWords) {
 		return($weatherWords);
 	} else {
@@ -79,10 +90,39 @@ function getTemperature($xpath, $dom, $index) {
 	}
 }
 
-	$url = 'http://bbc.co.uk/weather/hp14';
+
+function getGet($key, $defaultValue) {
+	//Gets the given key from the query string via $_GET. Handles empty or non-existent variables
+	if (isset($_GET[$key]) && $_GET[$key] !== "") {
+		return $_GET[$key];
+	} else {
+		return $defaultValue;
+	}
+}
+	//Get query parameters or defaults
+	$postcode = strtolower(getGet(POSTCODE_PARAM,DEFAULT_POSTCODE));
+	$url = 'http://bbc.co.uk/weather/'.$postcode;
+
+	$minTemp = getGet(MIN_TEMP_PARAM, DEFAULT_MIN_TEMP);
+	$maxTemp = getGet(MAX_TEMP_PARAM, DEFAULT_MAX_TEMP);
+
+	//Get acceptable weather words
+	$bikingWeather = array();
+	
+	if (isset($_GET[GOOD_WEATHER_PARAM]) && $_GET[GOOD_WEATHER_PARAM] !== "") {
+		$goodWeatherList = explode(",", urldecode($_GET[GOOD_WEATHER_PARAM]));
+		foreach ($goodWeatherList as $goodWord) {
+			$bikingWeather[$goodWord] = true;
+		}
+	} else {
+		$bikingWeather = $bikingWeatherDefault;
+	}
+	
 	$pageHTML = file_get_contents($url);
 	//Displayed page looks different to browser, possibly because server isn't in the UK, so this helps with debugging
-//	var_dump($pageHTML);
+	if ($_GET["debug"]) {
+		var_dump($pageHTML);
+	}
 	if ($pageHTML) {
 		$dom = new DomDocument();
 		
@@ -98,12 +138,12 @@ function getTemperature($xpath, $dom, $index) {
 		$weatherWords = getWeatherWords($xpath, $index);
 		$temperature = getTemperature($xpath, $dom, $index);
 		?>
-        <h1>
+<h1>
         <?php
 		print $weatherWords." ".$temperature."&deg;C - ";
 		if (!array_key_exists(strtolower($weatherWords),$bikingWeather)) {
-			print "Don't know about $weatherWords";
-		} else if ($bikingWeather[strtolower($weatherWords)] && ($temperature >= MIN_TEMP) && ($temperature <= MAX_TEMP)) {
+			print "don't bike to work, ";
+		} else if ($bikingWeather[strtolower($weatherWords)] && ($temperature >= $minTemp) && ($temperature <= $maxTemp)) {
 			print "bike to work, ";
 		} else {
 			print "don't bike to work, ";
@@ -113,14 +153,14 @@ function getTemperature($xpath, $dom, $index) {
 		$temperature = getTemperature($xpath, $dom, $index);
 		print $weatherWords." ".$temperature."&deg;C - ";
 		if (!array_key_exists(strtolower($weatherWords),$bikingWeather)) {
-			print "Don't know about $weatherWords";
-		} else if ($bikingWeather[strtolower($weatherWords)] && ($temperature >= MIN_TEMP) && ($temperature <= MAX_TEMP)) {
+			print "don't bike home";
+		} else if ($bikingWeather[strtolower($weatherWords)] && ($temperature >= $minTemp) && ($temperature <= $maxTemp)) {
 			print "bike home";
 		} else {
 			print "don't bike home";
 		}
 		?>
-        </h1>
+</h1>
 
         <?php
 		
