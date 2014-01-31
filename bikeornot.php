@@ -7,23 +7,29 @@
 <?php 
 //Screenscrape BBC weather page to find a) which is the first hour and then b) weather conditions at, say, 0900 and 1800
 //TODO testing before turn into something simpler, like just a picture, or a RPi LED, based on whether can bike both ways
-//TODO better error handling if 6am not available
+//TODO better error handling if first hour not available, e.g. run midday
+//TODO unit tests
 //WBNice user configuration for acceptable weather, max/min temp, timeslot to choose, 
 //HTML5 local storage to store that (is a cookie enough?), API
+//TODO rounding if hour slots go back to 3
 
 //Gap between hours on page, started off as 3, but then page changed
 define('HOUR_SLOTS', 1);
 
 //URL parameter names
+define ('POSTCODE_PARAM',"postcode");
 define ('MIN_TEMP_PARAM',"mintemp");
 define ('MAX_TEMP_PARAM',"maxtemp");
-define ('POSTCODE_PARAM',"postcode");
+define ('FIRST_HOUR_PARAM',"firsthour");
+define ('SECOND_HOUR_PARAM',"secondhour");
 define ('GOOD_WEATHER_PARAM', "goodweather");
 
 //Defaults
 define ('DEFAULT_MIN_TEMP', 2);
 define ('DEFAULT_MAX_TEMP', 25);
 define ('DEFAULT_POSTCODE', "hp14");
+define ('DEFAULT_FIRST_HOUR', 8);
+define ('DEFAULT_SECOND_HOUR', 17);
 
 // Which weather is biking weather
 $bikingWeatherDefault = array (
@@ -51,6 +57,7 @@ $bikingWeatherDefault = array (
 "sleet showers" => false,
 "sunny" => true,
 "sunny intervals" => true,
+"thick cloud" => true,
 "thunder storm" => false,
 "thundery shower" => false,
 "white cloud" => true
@@ -106,6 +113,9 @@ function getGet($key, $defaultValue) {
 	$minTemp = getGet(MIN_TEMP_PARAM, DEFAULT_MIN_TEMP);
 	$maxTemp = getGet(MAX_TEMP_PARAM, DEFAULT_MAX_TEMP);
 
+	$firstHour = getGet(FIRST_HOUR_PARAM, DEFAULT_FIRST_HOUR);
+	$secondHour = getGet(SECOND_HOUR_PARAM, DEFAULT_SECOND_HOUR);
+
 	//Get acceptable weather words
 	$bikingWeather = array();
 	
@@ -128,14 +138,18 @@ function getGet($key, $defaultValue) {
 		
 		$dom->loadHTML($pageHTML);
 		$xpath = new DOMXPath($dom);
-		$firstHour = $xpath->query('//*[@id="hourly"]/div[3]/table/thead/tr/th[2]/span[1]/text()');
+		$startHour = $xpath->query('//*[@id="hourly"]/div[3]/table/thead/tr/th[2]/span[1]/text()');
 
-		if ($firstHour) {
-			$firstHour = 0+$dom->saveHTML($firstHour->item(0));
+		if ($startHour) {
+			$startHour = 0+$dom->saveHTML($startHour->item(0));
 		}
 		//TODO error handling if parse fails
-		$index = getIndex($firstHour, 9);
+		$index = getIndex($startHour, $firstHour);
 		$weatherWords = getWeatherWords($xpath, $index);
+		if (!array_key_exists(strtolower($weatherWords),$bikingWeatherDefault)) {
+			//Let me know if this is a new word
+			mail("paulmorriss@iname.com","new weather word: ".$weatherWords,"");
+		}
 		$temperature = getTemperature($xpath, $dom, $index);
 		?>
 <h1>
@@ -148,8 +162,12 @@ function getGet($key, $defaultValue) {
 		} else {
 			print "don't bike to work, ";
 		}
-		$index = getIndex($firstHour, 18);
+		$index = getIndex($startHour, $secondHour);
 		$weatherWords = getWeatherWords($xpath, $index);
+		if (!array_key_exists(strtolower($weatherWords),$bikingWeatherDefault)) {
+			//Let me know if this is a new word
+			mail("paulmorriss@iname.com","new weather word: ".$weatherWords,"");
+		}
 		$temperature = getTemperature($xpath, $dom, $index);
 		print $weatherWords." ".$temperature."&deg;C - ";
 		if (!array_key_exists(strtolower($weatherWords),$bikingWeather)) {
