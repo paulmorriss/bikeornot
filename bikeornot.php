@@ -77,9 +77,16 @@ function getIndex($startHour, $requiredHour) {
 
 function getWeatherWords($xpath, $index) {
 	//Find the image for the weather and get the title attribute
+	
+	global $bikingWeatherDefault;
+	
 	$weatherWords = $xpath->query('//*[@id="hourly"]/div[3]/table/tbody/tr[1]/td['.strval($index).']/span/img/@title')->item(0)->nodeValue;
 
 	if ($weatherWords) {
+		if (!array_key_exists(strtolower($weatherWords),$bikingWeatherDefault)) {
+			//Let me know if this is a new word
+			mail("paulmorriss@iname.com","new weather word: ".$weatherWords,"");
+		}
 		return($weatherWords);
 	} else {
 		return "(not found)";
@@ -146,10 +153,6 @@ function getGet($key, $defaultValue) {
 		//TODO error handling if parse fails
 		$index = getIndex($startHour, $firstHour);
 		$weatherWords = getWeatherWords($xpath, $index);
-		if (!array_key_exists(strtolower($weatherWords),$bikingWeatherDefault)) {
-			//Let me know if this is a new word
-			mail("paulmorriss@iname.com","new weather word: ".$weatherWords,"");
-		}
 		$temperature = getTemperature($xpath, $dom, $index);
 		?>
 <h1>
@@ -164,10 +167,6 @@ function getGet($key, $defaultValue) {
 		}
 		$index = getIndex($startHour, $secondHour);
 		$weatherWords = getWeatherWords($xpath, $index);
-		if (!array_key_exists(strtolower($weatherWords),$bikingWeatherDefault)) {
-			//Let me know if this is a new word
-			mail("paulmorriss@iname.com","new weather word: ".$weatherWords,"");
-		}
 		$temperature = getTemperature($xpath, $dom, $index);
 		print $weatherWords." ".$temperature."&deg;C - ";
 		if (!array_key_exists(strtolower($weatherWords),$bikingWeather)) {
