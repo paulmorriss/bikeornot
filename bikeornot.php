@@ -13,6 +13,8 @@
 //HTML5 local storage to store that (is a cookie enough?), API
 //TODO rounding if hour slots go back to 3
 
+include_once('include.php');
+
 //Gap between hours on page, started off as 3, but then page changed
 define('HOUR_SLOTS', 1);
 
@@ -31,37 +33,7 @@ define ('DEFAULT_POSTCODE', "hp14");
 define ('DEFAULT_FIRST_HOUR', 8);
 define ('DEFAULT_SECOND_HOUR', 17);
 
-// Which weather is biking weather
-$bikingWeatherDefault = array (
-"clear sky" => true,
-"cloudy" => true,
-"drizzle" => false,
-"fog" => true,
-"foggy" => true,
-"grey cloud" => true,
-"heavy rain" => false,
-"heavy rain shower" => false,
-"heavy showers" => false,
-"heavy snow" => false,
-"light cloud" => true,
-"light rain" => false,
-"light rain shower" => false,
-"light showers" => false,
-"light snow" => false,
-"light snow shower" => false,
-"light snow showers" => false,
-"mist" => true,
-"misty" => true,
-"partly cloudy" => true,
-"sleet" => false,
-"sleet showers" => false,
-"sunny" => true,
-"sunny intervals" => true,
-"thick cloud" => true,
-"thunder storm" => false,
-"thundery shower" => false,
-"white cloud" => true
-);
+
 
 function getIndex($startHour, $requiredHour) {
 	//Gets the index in the table containing weather symbols and temps
@@ -113,30 +85,68 @@ function getGet($key, $defaultValue) {
 		return $defaultValue;
 	}
 }
-	//Get query parameters or defaults
-	$postcode = strtolower(getGet(POSTCODE_PARAM,DEFAULT_POSTCODE));
-	$url = 'http://bbc.co.uk/weather/'.$postcode;
 
-	$minTemp = getGet(MIN_TEMP_PARAM, DEFAULT_MIN_TEMP);
-	$maxTemp = getGet(MAX_TEMP_PARAM, DEFAULT_MAX_TEMP);
-
-	$firstHour = getGet(FIRST_HOUR_PARAM, DEFAULT_FIRST_HOUR);
-	$secondHour = getGet(SECOND_HOUR_PARAM, DEFAULT_SECOND_HOUR);
-
-	//Get acceptable weather words
-	$bikingWeather = array();
+	//Use prefs cookies, if present
 	
-	if (isset($_GET[GOOD_WEATHER_PARAM]) && $_GET[GOOD_WEATHER_PARAM] !== "") {
-		$goodWeatherList = explode(",", urldecode($_GET[GOOD_WEATHER_PARAM]));
-		foreach ($goodWeatherList as $goodWord) {
-			$bikingWeather[$goodWord] = true;
+	if (array_key_exists(PREFS_COOKIE_NAME, $_COOKIE)) {
+		$storedPrefs = new prefs();
+		$storedPrefs = unserialize($_COOKIE[PREFS_COOKIE_NAME]);
+		
+		if ($_GET["debug"]) {
+			var_dump($storedPrefs);
 		}
+		if ($storedPrefs->version !== PREFS_VERSION) {
+			//Only ever been one version so nothing to do yet
+		}
+		
+		//TODO probably more elegant way of doing this using the class
+		$postcode = $storedPrefs->postcode;
+		$minTemp = $storedPrefs->minTemp;
+		$maxTemp = $storedPrefs->maxTemp;
+		$firstHour = $storedPrefs->firstHour; 
+		$secondHour = $storedPrefs->secondHour;
+
+		foreach ($simplifiedMapping as $weatherWord => $simplifiedWord) {
+			//TODO this sort of empty string indicating always good weather is crying out for a class
+			if (!strcmp($simplifiedMapping[$weatherWord],"")) { //Always good weather
+				$bikingWeather[$weatherWord] = true;
+			} else	{
+				$bikingWeather[$weatherWord] = strcmp($storedPrefs->weatherChoices[$simplifiedMapping[$weatherWord]],"")>0;
+			}
+		}
+		if ($_GET["debug"]) {
+			var_dump($bikingWeather);
+		}
+
 	} else {
-		$bikingWeather = $bikingWeatherDefault;
+		//Get query parameters or defaults. TODO put this in separate API only routine
+		$postcode = strtolower(getGet(POSTCODE_PARAM,DEFAULT_POSTCODE));
+	
+		$minTemp = getGet(MIN_TEMP_PARAM, DEFAULT_MIN_TEMP);
+		$maxTemp = getGet(MAX_TEMP_PARAM, DEFAULT_MAX_TEMP);
+	
+		$firstHour = getGet(FIRST_HOUR_PARAM, DEFAULT_FIRST_HOUR);
+		$secondHour = getGet(SECOND_HOUR_PARAM, DEFAULT_SECOND_HOUR);
+	
+		//Get acceptable weather words
+		$bikingWeather = array();
+		
+		if (isset($_GET[GOOD_WEATHER_PARAM]) && $_GET[GOOD_WEATHER_PARAM] !== "") {
+			$goodWeatherList = explode(",", urldecode($_GET[GOOD_WEATHER_PARAM]));
+			foreach ($goodWeatherList as $goodWord) {
+				$bikingWeather[$goodWord] = true;
+			}
+		} else {
+			$bikingWeather = $bikingWeatherDefault;
+		}
 	}
 	
+	$url = 'http://bbc.co.uk/weather/'.$postcode;
+	if ($_GET["debug"]) {
+		var_dump($url);
+	}
 	$pageHTML = file_get_contents($url);
-	//Displayed page looks different to browser, possibly because server isn't in the UK, so this helps with debugging
+	//Displayed page may look different to browser, possibly because server isn't in the UK, so this helps with debugging
 	if ($_GET["debug"]) {
 		var_dump($pageHTML);
 	}
@@ -183,4 +193,5 @@ function getGet($key, $defaultValue) {
 		
 	}
 ?>
+<a href="prefs.php">Set/change your location and what weather you'll cycle in</a>
 </body>

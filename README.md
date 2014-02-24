@@ -5,11 +5,13 @@ It looks at the weather conditions and temperature during the commute times, and
 Provided by BBC Weather http://bbc.co.uk/weather, but not officially connected with the BBC.
 
 Current state:
-Output is for debug. Query parameters work
+Output is for debug. Query parameters work.
+Preferences can be specified and are stored in a cookie.
 
 Future work:
-Allow others to store their own preferences on their browser.
+Refactor to make code object orientated
 Better display (currently displays actual temperature and weather for debugging)
+Preferences screen looks better on mobile
 API?
 Hardware integration, e.g. Raspberry Pi and LEDs.
 Different weather provider?
