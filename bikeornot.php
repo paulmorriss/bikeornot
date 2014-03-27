@@ -9,9 +9,18 @@
 //TODO testing before turn into something simpler, like just a picture, or a RPi LED, based on whether can bike both ways
 //TODO better error handling if first hour not available, e.g. run midday
 //TODO unit tests
+// test getIndex with boundary conditions
+//test getweatherwords with static bbc page (pick different slots for different conditiosn)
+//test gettemperature similarly
+//need new function getstarthour, test similarly
+//test class with fixed cookie and _get data
+
+
 //WBNice user configuration for acceptable weather, max/min temp, timeslot to choose, 
-//HTML5 local storage to store that (is a cookie enough?), API
+//API
 //TODO rounding if hour slots go back to 3
+//TODO https://travis-ci.org/ for reguarly checking screenscraping works
+error_reporting(E_ALL);
 
 include_once('include.php');
 
@@ -37,7 +46,7 @@ define ('DEFAULT_SECOND_HOUR', 17);
 
 function getIndex($startHour, $requiredHour) {
 	//Gets the index in the table containing weather symbols and temps
-	//The images with the words as a title, are in a table with three hour increments
+	//The images with the words as a title, are in a table with one hour (aka HOUR_SLOTS) increments
 	//Returns 0 if data not available, e.g. 6am required and the earliest slot is 9am
 	if ($startHour <= $requiredHour) {
 		return (($requiredHour - $startHour) / HOUR_SLOTS) + 1;
@@ -77,14 +86,6 @@ function getTemperature($xpath, $dom, $index) {
 }
 
 
-function getGet($key, $defaultValue) {
-	//Gets the given key from the query string via $_GET. Handles empty or non-existent variables
-	if (isset($_GET[$key]) && $_GET[$key] !== "") {
-		return $_GET[$key];
-	} else {
-		return $defaultValue;
-	}
-}
 
 	//Use prefs cookies, if present
 	
@@ -99,13 +100,6 @@ function getGet($key, $defaultValue) {
 			//Only ever been one version so nothing to do yet
 		}
 		
-		//TODO probably more elegant way of doing this using the class
-		$postcode = $storedPrefs->postcode;
-		$minTemp = $storedPrefs->minTemp;
-		$maxTemp = $storedPrefs->maxTemp;
-		$firstHour = $storedPrefs->firstHour; 
-		$secondHour = $storedPrefs->secondHour;
-
 		foreach ($simplifiedMapping as $weatherWord => $simplifiedWord) {
 			//TODO this sort of empty string indicating always good weather is crying out for a class
 			if (!strcmp($simplifiedMapping[$weatherWord],"")) { //Always good weather
@@ -119,29 +113,10 @@ function getGet($key, $defaultValue) {
 		}
 
 	} else {
-		//Get query parameters or defaults. TODO put this in separate API only routine
-		$postcode = strtolower(getGet(POSTCODE_PARAM,DEFAULT_POSTCODE));
-	
-		$minTemp = getGet(MIN_TEMP_PARAM, DEFAULT_MIN_TEMP);
-		$maxTemp = getGet(MAX_TEMP_PARAM, DEFAULT_MAX_TEMP);
-	
-		$firstHour = getGet(FIRST_HOUR_PARAM, DEFAULT_FIRST_HOUR);
-		$secondHour = getGet(SECOND_HOUR_PARAM, DEFAULT_SECOND_HOUR);
-	
-		//Get acceptable weather words
-		$bikingWeather = array();
-		
-		if (isset($_GET[GOOD_WEATHER_PARAM]) && $_GET[GOOD_WEATHER_PARAM] !== "") {
-			$goodWeatherList = explode(",", urldecode($_GET[GOOD_WEATHER_PARAM]));
-			foreach ($goodWeatherList as $goodWord) {
-				$bikingWeather[$goodWord] = true;
-			}
-		} else {
-			$bikingWeather = $bikingWeatherDefault;
-		}
+		$storedPrefs = new prefs($_GET);	
 	}
 	
-	$url = 'http://bbc.co.uk/weather/'.$postcode;
+	$url = 'http://bbc.co.uk/weather/'.$storedPrefs->postcode;
 	if ($_GET["debug"]) {
 		var_dump($url);
 	}
@@ -161,27 +136,27 @@ function getGet($key, $defaultValue) {
 			$startHour = 0+$dom->saveHTML($startHour->item(0));
 		}
 		//TODO error handling if parse fails
-		$index = getIndex($startHour, $firstHour);
+		$index = getIndex($startHour, $storedPrefs->firstHour);
 		$weatherWords = getWeatherWords($xpath, $index);
 		$temperature = getTemperature($xpath, $dom, $index);
 		?>
 <h1>
         <?php
 		print $weatherWords." ".$temperature."&deg;C - ";
-		if (!array_key_exists(strtolower($weatherWords),$bikingWeather)) {
+		if (!array_key_exists(strtolower($weatherWords),$storedPrefs->bikingWeather)) {
 			print "don't bike to work, ";
-		} else if ($bikingWeather[strtolower($weatherWords)] && ($temperature >= $minTemp) && ($temperature <= $maxTemp)) {
+		} else if ($bikingWeather[strtolower($weatherWords)] && ($temperature >= $storedPrefs->minTemp) && ($temperature <= $storedPrefs->maxTemp)) {
 			print "bike to work, ";
 		} else {
 			print "don't bike to work, ";
 		}
-		$index = getIndex($startHour, $secondHour);
+		$index = getIndex($startHour, $storedPrefs->secondHour);
 		$weatherWords = getWeatherWords($xpath, $index);
 		$temperature = getTemperature($xpath, $dom, $index);
 		print $weatherWords." ".$temperature."&deg;C - ";
-		if (!array_key_exists(strtolower($weatherWords),$bikingWeather)) {
+		if (!array_key_exists(strtolower($weatherWords),$storedPrefs->bikingWeather)) {
 			print "don't bike home";
-		} else if ($bikingWeather[strtolower($weatherWords)] && ($temperature >= $minTemp) && ($temperature <= $maxTemp)) {
+		} else if ($bikingWeather[strtolower($weatherWords)] && ($temperature >= $storedPrefs->minTemp) && ($temperature <= $storedPrefs->maxTemp)) {
 			print "bike home";
 		} else {
 			print "don't bike home";

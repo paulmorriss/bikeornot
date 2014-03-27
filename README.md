@@ -7,9 +7,10 @@ Provided by BBC Weather http://bbc.co.uk/weather, but not officially connected w
 Current state:
 Output is for debug. Query parameters work.
 Preferences can be specified and are stored in a cookie.
+Preferences class now used, but simplified choices not stored yet.
 
 Future work:
-Refactor to make code object orientated
+Continue refactor to make code object orientated
 Better display (currently displays actual temperature and weather for debugging)
 Preferences screen looks better on mobile
 API?

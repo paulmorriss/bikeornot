@@ -1,4 +1,13 @@
 <?php 
+function getGet($get, $key, $defaultValue) {
+	//Gets the given key from the query string via $_GET (passed in to aid testing). Handles empty or non-existent variables
+	if (isset($_GET[$key]) && $_GET[$key] !== "") {
+		return $_GET[$key];
+	} else {
+		return $defaultValue;
+	}
+}
+
 // Which weather is biking weather.
 // Also useful for a list of all known words
 $bikingWeatherDefault = array (
@@ -76,14 +85,50 @@ $simplifiedMapping = array (
 define('PREFS_COOKIE_NAME', 'prefs');
 define ('PREFS_VERSION','1.0');
 class prefs {
-	//A class to store preferences, so only contains data
+	//A class to store and supply preferences
+	//knows the mapping between simplified choices and the full list
+	
 	public $version; //So we can stop things breaking if this changes
 	public $postcode;
 	public $minTemp;
 	public $maxTemp;
 	public $firstHour;
 	public $secondHour;
-	public $weatherChoices;
+	public $bikingWeather; //The full list of weather words
+	public $simplifiedBikingWeather; //The simplified options
+
+	function __construct($get) {
+	//if $_GET fields present then use those
+	//otherwise sets default values for the preferences
+	
+		//Get query parameters or defaults
+		$this->postcode = strtolower(getGet($get, POSTCODE_PARAM,DEFAULT_POSTCODE));
+	
+		$this->minTemp = getGet($get, MIN_TEMP_PARAM, DEFAULT_MIN_TEMP);
+		$this->maxTemp = getGet($get, MAX_TEMP_PARAM, DEFAULT_MAX_TEMP);
+	
+		$this->firstHour = getGet($get, FIRST_HOUR_PARAM, DEFAULT_FIRST_HOUR);
+		$this->secondHour = getGet($get, SECOND_HOUR_PARAM, DEFAULT_SECOND_HOUR);
+	
+		//Get acceptable weather words
+		$this->bikingWeather = array();
+		
+		if (isset($get[GOOD_WEATHER_PARAM]) && $get[GOOD_WEATHER_PARAM] !== "") {
+			$goodWeatherList = explode(",", urldecode($get[GOOD_WEATHER_PARAM]));
+			foreach ($goodWeatherList as $goodWord) {
+				$this->bikingWeather[$goodWord] = true;
+			}
+		} else {
+			$this->bikingWeather = $bikingWeatherDefault;
+		}
+	}
+
+//public getSimplifiedChoices
+//returns a simplified list of choices suitable for displays on the prefs page
+//in an array with key = internal name, value = display name
+
+//public bikeOrNot
+//given the parameters
 }
 
 ?>
