@@ -19,7 +19,9 @@
 //WBNice user configuration for acceptable weather, max/min temp, timeslot to choose, 
 //API
 //TODO rounding if hour slots go back to 3
-//TODO https://travis-ci.org/ for reguarly checking screenscraping works
+//TODO https://travis-ci.org/ for integration testing
+//TODO think about how to run automatically and spot if BBC page structure changes
+
 error_reporting(E_ALL);
 
 include_once('include.php');
@@ -35,62 +37,73 @@ define ('FIRST_HOUR_PARAM',"firsthour");
 define ('SECOND_HOUR_PARAM',"secondhour");
 define ('GOOD_WEATHER_PARAM', "goodweather");
 
-//Defaults
-define ('DEFAULT_MIN_TEMP', 2);
-define ('DEFAULT_MAX_TEMP', 25);
-define ('DEFAULT_POSTCODE', "hp14");
-define ('DEFAULT_FIRST_HOUR', 8);
-define ('DEFAULT_SECOND_HOUR', 17);
 
-
-
-function getIndex($startHour, $requiredHour) {
-	//Gets the index in the table containing weather symbols and temps
-	//The images with the words as a title, are in a table with one hour (aka HOUR_SLOTS) increments
-	//Returns 0 if data not available, e.g. 6am required and the earliest slot is 9am
-	if ($startHour <= $requiredHour) {
-		return (($requiredHour - $startHour) / HOUR_SLOTS) + 1;
-	} else {
-		return 0;
-	}
-	
-}
-
-function getWeatherWords($xpath, $index) {
-	//Find the image for the weather and get the title attribute
-	
-	global $bikingWeatherDefault;
-	
-	$weatherWords = $xpath->query('//*[@id="hourly"]/div[3]/table/tbody/tr[1]/td['.strval($index).']/span/img/@title')->item(0)->nodeValue;
-
-	if ($weatherWords) {
-		if (!array_key_exists(strtolower($weatherWords),$bikingWeatherDefault)) {
-			//Let me know if this is a new word
-			mail("paulmorriss@iname.com","new weather word: ".$weatherWords,"");
+class weatherPage {
+/**
+ * Gets the index in the table containing weather symbols and temps
+ * The images with the words as a title, are in a table with one hour (aka HOUR_SLOTS) increments
+ * Returns 0 if data not available, e.g. 6am required and the earliest slot is 9am
+ *
+ * @param int $startHour The first hour on the weather page
+ * @param int $requiredHour The hour slot required
+ * @return int The index (i.e. column) in the table of weather slots on the webpage
+ */	
+	public function getIndex($startHour, $requiredHour) {
+		//
+		if ($startHour <= $requiredHour) {
+			return (($requiredHour - $startHour) / HOUR_SLOTS) + 1;
+		} else {
+			return 0;
 		}
-		return($weatherWords);
-	} else {
-		return "(not found)";
+		
+	}
+	
+/**
+ * Find the image for the weather and get the title attribute 
+ *
+ * @param mixed $xpath The xpath object for the webpage
+ * @param int $index The index (i.e. column) in the table of weather slots on the webpage
+ * @return string The description of that weather type or "(not found)" if no such slot on page
+ */	
+	public function getWeatherWords($xpath, $index) {
+		
+		
+		$weatherWordTitle = $xpath->query('//*[@id="hourly"]/div[3]/table/tbody/tr[1]/td['.strval($index).']/span/img/@title');#
+		if ($weatherWordTitle->length <> 0) { /*This means we found it */
+			$weatherWords = $weatherWordTitle->item(0)->nodeValue;
+		} else {
+			return "(not found)";
+		}
+	
+		if ($weatherWords) {
+			return(strtolower($weatherWords));
+		} else {
+			return "(not found)";
+		}
+		
+	}
+	
+	public function getTemperature($xpath, $dom, $index) {
+		//Find the temperature figure
+		$temperatureTitle = $xpath->query('//*[@id="hourly"]/div[3]/table/tbody/tr[2]/td['.strval($index).']/span/span/span[1]/text()');
+		if ($temperatureTitle->length <> 0) { /*This means we found it */
+			$temperature = $temperatureTitle->item(0);
+		} else {
+			return "(not found)";
+		}
+		if ($temperature) {
+			return($dom->saveHTML($temperature));
+		} else {
+			return "(not found)";
+		}
 	}
 	
 }
-
-function getTemperature($xpath, $dom, $index) {
-	//Find the temperature figure
-	$temperature = $xpath->query('//*[@id="hourly"]/div[3]/table/tbody/tr[2]/td['.strval($index).']/span/span/span[1]/text()')->item(0);
-	if ($temperature) {
-		return($dom->saveHTML($temperature));
-	} else {
-		return "(not found)";
-	}
-}
-
-
 
 	//Use prefs cookies, if present
 	
 	if (array_key_exists(PREFS_COOKIE_NAME, $_COOKIE)) {
-		$storedPrefs = new prefs();
+		$storedPrefs = new prefs(array());
 		$storedPrefs = unserialize($_COOKIE[PREFS_COOKIE_NAME]);
 		
 		if ($_GET["debug"]) {
@@ -127,7 +140,8 @@ function getTemperature($xpath, $dom, $index) {
 	}
 	if ($pageHTML) {
 		$dom = new DomDocument();
-		
+
+		libxml_use_internal_errors(true); //Prevent warnings on HTML errors in the page
 		$dom->loadHTML($pageHTML);
 		$xpath = new DOMXPath($dom);
 		$startHour = $xpath->query('//*[@id="hourly"]/div[3]/table/thead/tr/th[2]/span[1]/text()');
@@ -136,27 +150,23 @@ function getTemperature($xpath, $dom, $index) {
 			$startHour = 0+$dom->saveHTML($startHour->item(0));
 		}
 		//TODO error handling if parse fails
-		$index = getIndex($startHour, $storedPrefs->firstHour);
-		$weatherWords = getWeatherWords($xpath, $index);
-		$temperature = getTemperature($xpath, $dom, $index);
+		$index = weatherPage::getIndex($startHour, $storedPrefs->firstHour);
+		$weatherWords = weatherPage::getWeatherWords($xpath, $index);
+		$temperature = weatherPage::getTemperature($xpath, $dom, $index);
 		?>
 <h1>
         <?php
 		print $weatherWords." ".$temperature."&deg;C - ";
-		if (!array_key_exists(strtolower($weatherWords),$storedPrefs->bikingWeather)) {
-			print "don't bike to work, ";
-		} else if ($bikingWeather[strtolower($weatherWords)] && ($temperature >= $storedPrefs->minTemp) && ($temperature <= $storedPrefs->maxTemp)) {
-			print "bike to work, ";
+		if ($storedPrefs->checkBikingWeather($weatherWords,$temperature)) {
+			print "bike to work";
 		} else {
 			print "don't bike to work, ";
 		}
-		$index = getIndex($startHour, $storedPrefs->secondHour);
-		$weatherWords = getWeatherWords($xpath, $index);
-		$temperature = getTemperature($xpath, $dom, $index);
+		$index = weatherPage::getIndex($startHour, $storedPrefs->secondHour);
+		$weatherWords = weatherPage::getWeatherWords($xpath, $index);
+		$temperature = weatherPage::getTemperature($xpath, $dom, $index);
 		print $weatherWords." ".$temperature."&deg;C - ";
-		if (!array_key_exists(strtolower($weatherWords),$storedPrefs->bikingWeather)) {
-			print "don't bike home";
-		} else if ($bikingWeather[strtolower($weatherWords)] && ($temperature >= $storedPrefs->minTemp) && ($temperature <= $storedPrefs->maxTemp)) {
+		if ($storedPrefs->checkBikingWeather($weatherWords,$temperature)) {
 			print "bike home";
 		} else {
 			print "don't bike home";

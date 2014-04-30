@@ -1,0 +1,1355 @@
+<!DOCTYPE html> <html lang="en-GB" > <head> <!-- Barlesque 2.60.6 --> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> <meta name="description" content="Hourly weather for HP14 with a 5 to 10 day forecast, giving a look further ahead." /> <meta name="keywords" content="BBC, Weather" />   <title>BBC Weather - HP14</title>     
+   
+  <link rel="index" href="http://www.bbc.co.uk/a-z/" title="A to Z" /> <link rel="copyright" href="http://www.bbc.co.uk/terms/" title="Terms of Use" /> <link rel="icon" href="http://www.bbc.co.uk/favicon.ico" type="image/x-icon" />  <meta name="viewport" content="width = 996" /> 
+
+<script>window.bbcredirection={geo:true}</script><script type="text/javascript">/*<![CDATA[*/
+window.orb = window.orb || {};
+(function() {
+    'use strict';
+    window.fig = window.fig || {};
+    window.fig.manager = {
+                include: function(w) {
+            w = w || window;
+            var d = w.document,
+                c = d.cookie,
+                f = c.match(/ckns_orb_fig=([^;]+)/);
+
+            if ( !f && c.indexOf('ckns_orb_nofig=1') > -1 ) {
+                this.setFig(w, {no:1});
+            }
+            else {
+                if (f) {
+                    eval('f = ' + decodeURIComponent(RegExp.$1) + ';')
+                    this.setFig(w, f);                  
+                }
+                d.write('<script src="https://ssl.live.bbc.co.uk/frameworks/fig/1/fig.js"><'+'/script>');
+            }         
+  
+        },
+                confirm: function(w) {
+            w = w || window;
+            if (w.orb && w.orb.fig && w.orb.fig('no')) {
+               this.setFigCookie(w);
+            }
+            
+            if (w.orb === undefined || w.orb.fig === undefined) {
+                this.setFig(w, {no:1});
+                this.setFigCookie(w);
+            }
+        },
+                setFigCookie: function(w) {
+            w.document.cookie = 'ckns_orb_nofig=1; expires=' + new Date(new Date().getTime() + 1000 * 60 * 10).toGMTString() + ';';
+        },
+                setFig: function(w, f){
+            (function(){var o=f;w.orb=w.orb||{};w.orb.fig=function(k){return (arguments.length)? o[k]:o};})();
+        }
+    }
+})();
+fig.manager.include();
+/*]]>*/</script>
+<script type="text/javascript"> fig.manager.confirm(); </script>
+
+ <link rel="stylesheet" type="text/css" href="http://static.bbci.co.uk/frameworks/barlesque/2.60.6/desktop/3.5/style/main.css"  />  <link rel="stylesheet" type="text/css" href="http://static.bbci.co.uk/locator/weather/0.19.0/style/locator-weather.css"  />  <link rel="stylesheet" type="text/css" href="http://static.bbci.co.uk/locator/0.116.2/style/locator.css"  />  <script type="text/javascript">/*<![CDATA[*/ (function(undefined){if(!window.bbc){window.bbc={}}var ROLLING_PERIOD_DAYS=30;window.bbc.Mandolin=function(id,segments,opts){var now=new Date().getTime(),storedItem,DEFAULT_START=now,DEFAULT_RATE=1,COOKIE_NAME="ckpf_mandolin";opts=opts||{};this._id=id;this._segmentSet=segments;this._store=new window.window.bbc.Mandolin.Storage(COOKIE_NAME);this._opts=opts;this._rate=(opts.rate!==undefined)?+opts.rate:DEFAULT_RATE;this._startTs=(opts.start!==undefined)?new Date(opts.start).getTime():new Date(DEFAULT_START).getTime();this._endTs=(opts.end!==undefined)?new Date(opts.end).getTime():daysFromNow(ROLLING_PERIOD_DAYS);this._signupEndTs=(opts.signupEnd!==undefined)?new Date(opts.signupEnd).getTime():this._endTs;this._segment=null;if(typeof id!=="string"){throw new Error("Invalid Argument: id must be defined and be a string")}if(Object.prototype.toString.call(segments)!=="[object Array]"){throw new Error("Invalid Argument: Segments are required.")}if(opts.rate!==undefined&&(opts.rate<0||opts.rate>1)){throw new Error("Invalid Argument: Rate must be between 0 and 1.")}if(this._startTs>this._endTs){throw new Error("Invalid Argument: end date must occur after start date.")}if(!(this._startTs<this._signupEndTs&&this._signupEndTs<=this._endTs)){throw new Error("Invalid Argument: SignupEnd must be between start and end date")}removeExpired.call(this,now);if((storedItem=this._store.getItem(this._id))){this._segment=storedItem.segment}else{if(this._startTs<=now&&now<this._signupEndTs&&now<=this._endTs&&this._store.isEnabled()===true){this._segment=pick(segments,this._rate);if(opts.end===undefined){this._store.setItem(this._id,{segment:this._segment})}else{this._store.setItem(this._id,{segment:this._segment,end:this._endTs})}log.call(this,"mandolin_segment")}}log.call(this,"mandolin_view")};window.bbc.Mandolin.prototype.getSegment=function(){return this._segment};function log(actionType,params){var that=this;require(["istats-1"],function(istats){istats.log(actionType,that._id+":"+that._segment,params?params:{})})}function removeExpired(expires){var items=this._store.getItems(),expiresInt=+expires;for(var key in items){if(items[key].end!==undefined&&+items[key].end<expiresInt){this._store.removeItem(key)}}}function getLastExpirationDate(data){var winner=0,rollingExpire=daysFromNow(ROLLING_PERIOD_DAYS);for(var key in data){if(data[key].end===undefined&&rollingExpire>winner){winner=rollingExpire}else{if(+data[key].end>winner){winner=+data[key].end}}}return(winner)?new Date(winner):new Date(rollingExpire)}window.bbc.Mandolin.prototype.log=function(params){log.call(this,"mandolin_log",params)};window.bbc.Mandolin.prototype.convert=function(params){log.call(this,"mandolin_convert",params);this.convert=function(){}};function daysFromNow(n){var endDate;endDate=new Date().getTime()+(n*60*60*24)*1000;return endDate}function pick(segments,rate){var picked,min=0,max=segments.length-1;if(typeof rate==="number"&&Math.random()>rate){return null}do{picked=Math.floor(Math.random()*(max-min+1))+min}while(picked>max);return segments[picked]}window.bbc.Mandolin.Storage=function(name){this._cookieName=name;this._isEnabled=(bbccookies.isAllowed(this._cookieName)===true&&bbccookies.cookiesEnabled()===true)};window.bbc.Mandolin.Storage.prototype.setItem=function(key,value){var storeData=this.getItems();storeData[key]=value;this.save(storeData);return value};window.bbc.Mandolin.Storage.prototype.isEnabled=function(){return this._isEnabled};window.bbc.Mandolin.Storage.prototype.getItem=function(key){var storeData=this.getItems();return storeData[key]};window.bbc.Mandolin.Storage.prototype.removeItem=function(key){var storeData=this.getItems();delete storeData[key];this.save(storeData)};window.bbc.Mandolin.Storage.prototype.getItems=function(){return deserialise(this.readCookie(this._cookieName)||"")};window.bbc.Mandolin.Storage.prototype.save=function(data){window.bbccookies.set(this._cookieName+"="+encodeURIComponent(serialise(data))+"; expires="+getLastExpirationDate(data).toUTCString()+";")};window.bbc.Mandolin.Storage.prototype.readCookie=function(name){var nameEQ=name+"=",ca=window.bbccookies.get().split(";"),i,c;for(i=0;i<ca.length;i++){c=ca[i];while(c.charAt(0)===" "){c=c.substring(1,c.length)}if(c.indexOf(nameEQ)===0){return decodeURIComponent(c.substring(nameEQ.length,c.length))}}return null};function serialise(o){var str="";for(var p in o){if(o.hasOwnProperty(p)){str+='"'+p+'"'+":"+(typeof o[p]==="object"?(o[p]===null?"null":"{"+serialise(o[p])+"}"):'"'+o[p].toString().replace(/"/g,'\\"')+'"')+","}}return str.replace(/,\}/g,"}").replace(/,$/g,"")}function deserialise(str){var o;eval("o = {"+str+"}");return o}})(); /*]]>*/</script>  <script type="text/javascript">/*<![CDATA[*/ if (typeof bbccookies_flag === 'undefined') { bbccookies_flag = 'ON'; } showCTA_flag = false; cta_enabled = (showCTA_flag && (bbccookies_flag === 'ON') ); (function(){var e="ckns_policy",m="Thu, 01 Jan 1970 00:00:00 GMT",k={ads:true,personalisation:true,performance:true,necessary:true};function f(p){if(f.cache[p]){return f.cache[p]}var o=p.split("/"),q=[""];do{q.unshift((o.join("/")||"/"));o.pop()}while(q[0]!=="/");f.cache[p]=q;return q}f.cache={};function a(p){if(a.cache[p]){return a.cache[p]}var q=p.split("."),o=[];while(q.length&&"|co.uk|com|".indexOf("|"+q.join(".")+"|")===-1){if(q.length){o.push(q.join("."))}q.shift()}f.cache[p]=o;return o}a.cache={};function i(o,t,p){var z=[""].concat(a(window.location.hostname)),w=f(window.location.pathname),y="",r,x;for(var s=0,v=z.length;s<v;s++){r=z[s];for(var q=0,u=w.length;q<u;q++){x=w[q];y=o+"="+t+";"+(r?"domain="+r+";":"")+(x?"path="+x+";":"")+(p?"expires="+p+";":"");bbccookies.set(y,true)}}}window.bbccookies={_setEverywhere:i,cookiesEnabled:function(){var o="ckns_testcookie"+Math.floor(Math.random()*100000);this.set(o+"=1");if(this.get().indexOf(o)>-1){g(o);return true}return false},set:function(o){return document.cookie=o},get:function(){return document.cookie},_setPolicy:function(o){return h.apply(this,arguments)},readPolicy:function(o){return b.apply(this,arguments)},_deletePolicy:function(){i(e,"",m)},isAllowed:function(){return true},_isConfirmed:function(){return c()!==null},_acceptsAll:function(){var o=b();return o&&!(j(o).indexOf("0")>-1)},_getCookieName:function(){return d.apply(this,arguments)},_showPrompt:function(){var o=(!this._isConfirmed()&&window.cta_enabled&&this.cookiesEnabled()&&!window.bbccookies_disable);return(window.orb&&window.orb.fig)?o&&(window.orb.fig("no")||window.orb.fig("ck")):o}};bbccookies._getPolicy=bbccookies.readPolicy;function d(p){var o=(""+p).match(/^([^=]+)(?==)/);return(o&&o.length?o[0]:"")}function j(o){return""+(o.ads?1:0)+(o.personalisation?1:0)+(o.performance?1:0)}function h(r){if(typeof r==="undefined"){r=k}if(typeof arguments[0]==="string"){var o=arguments[0],q=arguments[1];if(o==="necessary"){q=true}r=b();r[o]=q}else{if(typeof arguments[0]==="object"){r.necessary=true}}var p=new Date();p.setYear(p.getFullYear()+1);p=p.toUTCString();bbccookies.set(e+"="+j(r)+";domain=bbc.co.uk;path=/;expires="+p+";");bbccookies.set(e+"="+j(r)+";domain=bbc.com;path=/;expires="+p+";");return r}function l(o){if(o===null){return null}var p=o.split("");return{ads:!!+p[0],personalisation:!!+p[1],performance:!!+p[2],necessary:true}}function c(){var o=new RegExp("(?:^|; ?)"+e+"=(\\d\\d\\d)($|;)"),p=document.cookie.match(o);if(!p){return null}return p[1]}function b(o){var p=l(c());if(!p){p=k}if(o){return p[o]}else{return p}}function g(o){return document.cookie=o+"=;expires="+m+";"}function n(){var o='<script type="text/javascript" src="http://static.bbci.co.uk/frameworks/bbccookies/0.6.3/script/bbccookies.js"><\/script>';if(window.bbccookies_flag==="ON"&&!bbccookies._acceptsAll()&&!window.bbccookies_disable){document.write(o)}}n()})(); /*]]>*/</script>      <script type="text/javascript"> if (! window.gloader) { window.gloader = [ "glow", {map: "http://node1.bbcimg.co.uk/glow/glow/map.1.7.7.js"}]; } </script>  <script type="text/javascript" src="http://node1.bbcimg.co.uk/glow/gloader.0.1.6.js"></script>   <script type="text/javascript" src="http://static.bbci.co.uk/frameworks/requirejs/0.13.1/sharedmodules/require.js"></script> <script type="text/javascript">  bbcRequireMap = {"jquery-1":"http://static.bbci.co.uk/frameworks/jquery/0.3.0/sharedmodules/jquery-1.7.2", "jquery-1.4":"http://static.bbci.co.uk/frameworks/jquery/0.3.0/sharedmodules/jquery-1.4", "jquery-1.9":"http://static.bbci.co.uk/frameworks/jquery/0.3.0/sharedmodules/jquery-1.9.1", "swfobject-2":"http://static.bbci.co.uk/frameworks/swfobject/0.1.10/sharedmodules/swfobject-2", "demi-1":"http://static.bbci.co.uk/frameworks/demi/0.10.0/sharedmodules/demi-1", "gelui-1":"http://static.bbci.co.uk/frameworks/gelui/0.9.13/sharedmodules/gelui-1", "cssp!gelui-1/overlay":"http://static.bbci.co.uk/frameworks/gelui/0.9.13/sharedmodules/gelui-1/overlay.css", "istats-1":"http://static.bbci.co.uk/frameworks/istats/0.17.3/modules/istats-1", "relay-1":"http://static.bbci.co.uk/frameworks/relay/0.2.4/sharedmodules/relay-1", "clock-1":"http://static.bbci.co.uk/frameworks/clock/0.1.9/sharedmodules/clock-1", "canvas-clock-1":"http://static.bbci.co.uk/frameworks/clock/0.1.9/sharedmodules/canvas-clock-1", "cssp!clock-1":"http://static.bbci.co.uk/frameworks/clock/0.1.9/sharedmodules/clock-1.css", "jssignals-1":"http://static.bbci.co.uk/frameworks/jssignals/0.3.6/modules/jssignals-1", "jcarousel-1":"http://static.bbci.co.uk/frameworks/jcarousel/0.1.10/modules/jcarousel-1", "components/average-conditions":"http://static.bbci.co.uk/weather/0.5.284/modules/components/average-conditions", "components/average-conditions/chart-config":"http://static.bbci.co.uk/weather/0.5.284/modules/components/average-conditions/chart-config", "components/average-conditions/chart-legend":"http://static.bbci.co.uk/weather/0.5.284/modules/components/average-conditions/chart-legend", "components/average-conditions/chart-theme":"http://static.bbci.co.uk/weather/0.5.284/modules/components/average-conditions/chart-theme", "components/average-conditions/chart":"http://static.bbci.co.uk/weather/0.5.284/modules/components/average-conditions/chart", "components/average-conditions/table-parser":"http://static.bbci.co.uk/weather/0.5.284/modules/components/average-conditions/table-parser", "components/average-conditions/tabs":"http://static.bbci.co.uk/weather/0.5.284/modules/components/average-conditions/tabs", "components/coast-sea/coastal-sections":"http://static.bbci.co.uk/weather/0.5.284/modules/components/coast-sea/coastal-sections", "components/coast-sea/list-with-warnings":"http://static.bbci.co.uk/weather/0.5.284/modules/components/coast-sea/list-with-warnings", "components/coast-sea/tide-graph-config":"http://static.bbci.co.uk/weather/0.5.284/modules/components/coast-sea/tide-graph-config", "components/coast-sea/tide-graph":"http://static.bbci.co.uk/weather/0.5.284/modules/components/coast-sea/tide-graph", "components/coast-sea/tide-tables":"http://static.bbci.co.uk/weather/0.5.284/modules/components/coast-sea/tide-tables", "components/contact-us":"http://static.bbci.co.uk/weather/0.5.284/modules/components/contact-us", "components/dotcom-travel":"http://static.bbci.co.uk/weather/0.5.284/modules/components/dotcom-travel", "components/forecast-carousel":"http://static.bbci.co.uk/weather/0.5.284/modules/components/forecast-carousel", "components/forecast-details":"http://static.bbci.co.uk/weather/0.5.284/modules/components/forecast-details", "components/forecast-details/loupe":"http://static.bbci.co.uk/weather/0.5.284/modules/components/forecast-details/loupe", "components/forecast-summary":"http://static.bbci.co.uk/weather/0.5.284/modules/components/forecast-summary", "components/forecast-videos":"http://static.bbci.co.uk/weather/0.5.284/modules/components/forecast-videos", "components/istats-tracking":"http://static.bbci.co.uk/weather/0.5.284/modules/components/istats-tracking", "components/maps":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps", "components/maps/OpenLayers/Layer/ForecastMarkers":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/OpenLayers/Layer/ForecastMarkers", "components/maps/OpenLayers/Layer/Weather":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/OpenLayers/Layer/Weather", "components/maps/OpenLayers/PinPoints/Forecast":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/OpenLayers/PinPoints/Forecast", "components/maps/OpenLayers/PinPoints/Location":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/OpenLayers/PinPoints/Location", "components/maps/Providers/Weather":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/Providers/Weather", "components/maps/forecastmap/DataLoader":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/forecastmap/DataLoader", "components/maps/forecastmap/Draggable":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/forecastmap/Draggable", "components/maps/forecastmap/ForecastLayerManager":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/forecastmap/ForecastLayerManager", "components/maps/forecastmap/ForecastMapController":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/forecastmap/ForecastMapController", "components/maps/forecastmap/ForecastMapModel":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/forecastmap/ForecastMapModel", "components/maps/forecastmap/ForecastMapView":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/forecastmap/ForecastMapView", "components/maps/forecastmap/GenericTree":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/forecastmap/GenericTree", "components/maps/forecastmap/KeyFocusHandler":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/forecastmap/KeyFocusHandler", "components/maps/forecastmap/PressureMapController":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/forecastmap/PressureMapController", "components/maps/forecastmap/PressureMapModel":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/forecastmap/PressureMapModel", "components/maps/forecastmap/PressureMapView":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/forecastmap/PressureMapView", "components/maps/forecastmap/TemporalNavLabel":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/forecastmap/TemporalNavLabel", "components/maps/forecastmap/TemporalNavView":"http://static.bbci.co.uk/weather/0.5.284/modules/components/maps/forecastmap/TemporalNavView", "components/my-favourites":"http://static.bbci.co.uk/weather/0.5.284/modules/components/my-favourites", "components/rss-panel":"http://static.bbci.co.uk/weather/0.5.284/modules/components/rss-panel", "components/settings-panel":"http://static.bbci.co.uk/weather/0.5.284/modules/components/settings-panel", "components/tabbed-forecast":"http://static.bbci.co.uk/weather/0.5.284/modules/components/tabbed-forecast", "components/unit-switching":"http://static.bbci.co.uk/weather/0.5.284/modules/components/unit-switching", "components/welcome":"http://static.bbci.co.uk/weather/0.5.284/modules/components/welcome", "domReady":"http://static.bbci.co.uk/weather/0.5.284/modules/domReady", "emp/config":"http://static.bbci.co.uk/weather/0.5.284/modules/emp/config", "emp/embedded-media":"http://static.bbci.co.uk/weather/0.5.284/modules/emp/embedded-media", "emp/settings":"http://static.bbci.co.uk/weather/0.5.284/modules/emp/settings", "i18n":"http://static.bbci.co.uk/weather/0.5.284/modules/i18n", "jqueryui/accordion":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/accordion", "jqueryui/autocomplete":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/autocomplete", "jqueryui/button":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/button", "jqueryui/core":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/core", "jqueryui/datepicker-af":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-af", "jqueryui/datepicker-ar-DZ":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-ar-DZ", "jqueryui/datepicker-ar":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-ar", "jqueryui/datepicker-az":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-az", "jqueryui/datepicker-be":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-be", "jqueryui/datepicker-bg":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-bg", "jqueryui/datepicker-bs":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-bs", "jqueryui/datepicker-ca":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-ca", "jqueryui/datepicker-cs":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-cs", "jqueryui/datepicker-cy-GB":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-cy-GB", "jqueryui/datepicker-da":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-da", "jqueryui/datepicker-de":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-de", "jqueryui/datepicker-el":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-el", "jqueryui/datepicker-en-AU":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-en-AU", "jqueryui/datepicker-en-GB":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-en-GB", "jqueryui/datepicker-en-NZ":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-en-NZ", "jqueryui/datepicker-eo":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-eo", "jqueryui/datepicker-es":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-es", "jqueryui/datepicker-et":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-et", "jqueryui/datepicker-eu":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-eu", "jqueryui/datepicker-fa":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-fa", "jqueryui/datepicker-fi":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-fi", "jqueryui/datepicker-fo":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-fo", "jqueryui/datepicker-fr-CA":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-fr-CA", "jqueryui/datepicker-fr-CH":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-fr-CH", "jqueryui/datepicker-fr":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-fr", "jqueryui/datepicker-gl":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-gl", "jqueryui/datepicker-he":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-he", "jqueryui/datepicker-hi":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-hi", "jqueryui/datepicker-hr":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-hr", "jqueryui/datepicker-hu":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-hu", "jqueryui/datepicker-hy":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-hy", "jqueryui/datepicker-id":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-id", "jqueryui/datepicker-is":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-is", "jqueryui/datepicker-it":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-it", "jqueryui/datepicker-ja":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-ja", "jqueryui/datepicker-ka":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-ka", "jqueryui/datepicker-kk":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-kk", "jqueryui/datepicker-km":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-km", "jqueryui/datepicker-ko":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-ko", "jqueryui/datepicker-ky":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-ky", "jqueryui/datepicker-lb":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-lb", "jqueryui/datepicker-lt":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-lt", "jqueryui/datepicker-lv":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-lv", "jqueryui/datepicker-mk":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-mk", "jqueryui/datepicker-ml":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-ml", "jqueryui/datepicker-ms":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-ms", "jqueryui/datepicker-nb":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-nb", "jqueryui/datepicker-nl-BE":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-nl-BE", "jqueryui/datepicker-nl":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-nl", "jqueryui/datepicker-nn":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-nn", "jqueryui/datepicker-no":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-no", "jqueryui/datepicker-pl":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-pl", "jqueryui/datepicker-pt-BR":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-pt-BR", "jqueryui/datepicker-pt":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-pt", "jqueryui/datepicker-rm":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-rm", "jqueryui/datepicker-ro":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-ro", "jqueryui/datepicker-ru":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-ru", "jqueryui/datepicker-sk":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-sk", "jqueryui/datepicker-sl":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-sl", "jqueryui/datepicker-sq":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-sq", "jqueryui/datepicker-sr-SR":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-sr-SR", "jqueryui/datepicker-sr":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-sr", "jqueryui/datepicker-sv":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-sv", "jqueryui/datepicker-ta":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-ta", "jqueryui/datepicker-th":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-th", "jqueryui/datepicker-tj":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-tj", "jqueryui/datepicker-tr":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-tr", "jqueryui/datepicker-uk":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-uk", "jqueryui/datepicker-vi":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-vi", "jqueryui/datepicker-zh-CN":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-zh-CN", "jqueryui/datepicker-zh-HK":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-zh-HK", "jqueryui/datepicker-zh-TW":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker-zh-TW", "jqueryui/datepicker":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/datepicker", "jqueryui/dialog":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/dialog", "jqueryui/draggable":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/draggable", "jqueryui/droppable":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/droppable", "jqueryui/effect-blind":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/effect-blind", "jqueryui/effect-bounce":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/effect-bounce", "jqueryui/effect-clip":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/effect-clip", "jqueryui/effect-drop":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/effect-drop", "jqueryui/effect-explode":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/effect-explode", "jqueryui/effect-fade":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/effect-fade", "jqueryui/effect-fold":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/effect-fold", "jqueryui/effect-highlight":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/effect-highlight", "jqueryui/effect-pulsate":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/effect-pulsate", "jqueryui/effect-scale":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/effect-scale", "jqueryui/effect-shake":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/effect-shake", "jqueryui/effect-slide":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/effect-slide", "jqueryui/effect-transfer":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/effect-transfer", "jqueryui/effect":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/effect", "jqueryui/menu":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/menu", "jqueryui/mouse":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/mouse", "jqueryui/position":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/position", "jqueryui/progressbar":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/progressbar", "jqueryui/resizable":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/resizable", "jqueryui/selectable":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/selectable", "jqueryui/slider":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/slider", "jqueryui/sortable":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/sortable", "jqueryui/spinner":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/spinner", "jqueryui/tabs":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/tabs", "jqueryui/tooltip":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/tooltip", "jqueryui/widget":"http://static.bbci.co.uk/weather/0.5.284/modules/jqueryui/widget", "lib/highcharts":"http://static.bbci.co.uk/weather/0.5.284/modules/lib/highcharts", "lib/highcharts.src":"http://static.bbci.co.uk/weather/0.5.284/modules/lib/highcharts.src", "lib/jquery.ajax-cache-response":"http://static.bbci.co.uk/weather/0.5.284/modules/lib/jquery.ajax-cache-response", "lib/jquery.autogrow-textarea":"http://static.bbci.co.uk/weather/0.5.284/modules/lib/jquery.autogrow-textarea", "lib/jquery.jcarousel":"http://static.bbci.co.uk/weather/0.5.284/modules/lib/jquery.jcarousel", "lib/jquery.mockjax":"http://static.bbci.co.uk/weather/0.5.284/modules/lib/jquery.mockjax", "lib/jquery.scrollTo":"http://static.bbci.co.uk/weather/0.5.284/modules/lib/jquery.scrollTo", "lib/jquery.simplemodal":"http://static.bbci.co.uk/weather/0.5.284/modules/lib/jquery.simplemodal", "lib/jquery.text-overflow":"http://static.bbci.co.uk/weather/0.5.284/modules/lib/jquery.text-overflow", "lib/jquery.tmpl":"http://static.bbci.co.uk/weather/0.5.284/modules/lib/jquery.tmpl", "test/fakes":"http://static.bbci.co.uk/weather/0.5.284/modules/test/fakes", "test/lib/json2":"http://static.bbci.co.uk/weather/0.5.284/modules/test/lib/json2", "test/shared":"http://static.bbci.co.uk/weather/0.5.284/modules/test/shared", "test/stubs/emp/config":"http://static.bbci.co.uk/weather/0.5.284/modules/test/stubs/emp/config", "test/stubs/emp/embedded-media":"http://static.bbci.co.uk/weather/0.5.284/modules/test/stubs/emp/embedded-media", "test/stubs/emp/settings":"http://static.bbci.co.uk/weather/0.5.284/modules/test/stubs/emp/settings", "test/stubs/util/state":"http://static.bbci.co.uk/weather/0.5.284/modules/test/stubs/util/state", "translations/nls/cy/weather":"http://static.bbci.co.uk/weather/0.5.284/modules/translations/nls/cy/weather", "translations/nls/ga/weather":"http://static.bbci.co.uk/weather/0.5.284/modules/translations/nls/ga/weather", "translations/nls/gd/weather":"http://static.bbci.co.uk/weather/0.5.284/modules/translations/nls/gd/weather", "translations/nls/weather":"http://static.bbci.co.uk/weather/0.5.284/modules/translations/nls/weather", "ui/optionpanel":"http://static.bbci.co.uk/weather/0.5.284/modules/ui/optionpanel", "ui/tabset":"http://static.bbci.co.uk/weather/0.5.284/modules/ui/tabset", "ui/toggle":"http://static.bbci.co.uk/weather/0.5.284/modules/ui/toggle", "util/carousel":"http://static.bbci.co.uk/weather/0.5.284/modules/util/carousel", "util/cookie":"http://static.bbci.co.uk/weather/0.5.284/modules/util/cookie", "util/edition":"http://static.bbci.co.uk/weather/0.5.284/modules/util/edition", "util/favourites":"http://static.bbci.co.uk/weather/0.5.284/modules/util/favourites", "util/namespace":"http://static.bbci.co.uk/weather/0.5.284/modules/util/namespace", "util/sharedLocation":"http://static.bbci.co.uk/weather/0.5.284/modules/util/sharedLocation", "util/state":"http://static.bbci.co.uk/weather/0.5.284/modules/util/state", "util/units":"http://static.bbci.co.uk/weather/0.5.284/modules/util/units", "weather-built":"http://static.bbci.co.uk/weather/0.5.284/modules/weather-built", "weather":"http://static.bbci.co.uk/weather/0.5.284/modules/weather", "locator/locator":"http://static.bbci.co.uk/locator/0.116.2/modules/locator/locator", "locator/utils":"http://static.bbci.co.uk/locator/0.116.2/modules/locator/utils", "locator/search":"http://static.bbci.co.uk/locator/0.116.2/modules/locator/search", "locator/confirm":"http://static.bbci.co.uk/locator/0.116.2/modules/locator/confirm", "locator/autocomplete":"http://static.bbci.co.uk/locator/0.116.2/modules/locator/autocomplete", "locator/mobile/locator":"http://static.bbci.co.uk/locator/0.116.2/modules/locator/mobile/locator", "locator/mobile/vendor/ender/reqwest":"http://static.bbci.co.uk/locator/0.116.2/modules/locator/mobile/vendor/ender/reqwest", "locator/mobile/vendor/ender/bonzo":"http://static.bbci.co.uk/locator/0.116.2/modules/locator/mobile/vendor/ender/bonzo", "locator/mobile/vendor/ender/qwery-mobile":"http://static.bbci.co.uk/locator/0.116.2/modules/locator/mobile/vendor/ender/qwery-mobile", "locator/cookies":"http://static.bbci.co.uk/locator/0.116.2/modules/locator/cookies", "locator/geolocation":"http://static.bbci.co.uk/locator/0.116.2/modules/locator/geolocation", "locator/bootstrap":"http://static.bbci.co.uk/locator/0.116.2/modules/locator/bootstrap", "locator/mobile/bootstrap":"http://static.bbci.co.uk/locator/0.116.2/modules/locator/mobile/bootstrap"}; require({ baseUrl: 'http://static.bbci.co.uk/', paths: bbcRequireMap, waitSeconds: 30 }); </script>      <script type="text/javascript" src="http://static.bbci.co.uk/frameworks/barlesque/2.60.6/desktop/3.5/script/barlesque.js"></script>
+    <script type="text/javascript" src="http://static.bbci.co.uk/locator/0.116.2/script/locator.js"></script>
+  
+<!--[if IE 6]>
+        <script type="text/javascript">
+        try {
+            document.execCommand("BackgroundImageCache",false,true);
+        } catch(e) {}
+    </script>
+        <style type="text/css">
+        /* Use filters for IE6 */
+        #blq-blocks a {
+            background-image: none;
+            filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://static.bbci.co.uk/frameworks/barlesque/2.60.6/desktop/3.5//img/blq-blocks_white_alpha.png', sizingMethod='image');
+        }
+        .blq-masthead-focus #blq-blocks a,
+        .blq-mast-text-dark #blq-blocks a {
+            background-image: none;
+            filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://static.bbci.co.uk/frameworks/barlesque/2.60.6/desktop/3.5//img/blq-blocks_grey_alpha.png', sizingMethod='image');
+        }
+        #blq-nav-search button span {
+            background-image: none;
+            filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://static.bbci.co.uk/frameworks/barlesque/2.60.6/desktop/3.5//img/blq-search_grey_alpha.png', sizingMethod='image');
+        }
+        #blq-nav-search button img {
+            position: absolute;
+            left: -999em;    
+        }
+    </style>
+<![endif]-->
+
+<!--[if (IE 7])|(IE 8)>
+    <style type="text/css">
+        .blq-clearfix {
+            display: inline-block;
+        }
+    </style>
+<![endif]-->
+
+<script type="text/javascript">
+     blq.setEnvironment('live');  if (! /bbc\.co\.uk$/i.test(window.location.hostname) ) { document.documentElement.className += ' blq-not-bbc-co-uk'; } </script>
+
+  <script type="text/javascript"> /*<![CDATA[*/ function oqsSurveyManager(w, flag) {  var defaultThreshold = 0.7, usePulseThreshold = (flag === 'OFF')? 1 : defaultThreshold, activeThreshold; w.oqs = w.oqs || {}; if ( w.document.cookie.match(/(?:^|; *)ckns_oqs_usePulseThreshold=([\d.]+)/) ) { activeThreshold = RegExp.$1; } else if (typeof w.oqs_usePulseThreshold !== 'undefined') { activeThreshold = w.oqs_usePulseThreshold; } else { activeThreshold = usePulseThreshold; } w.oqs.usePulse = (w.Math.random() < activeThreshold); if (!w.oqs.usePulse) {  w.document.write('<script type="text/javascript" src="http://static.bbci.co.uk/frameworks/barlesque/2.60.6/desktop/3.5/script/vendor/edr.js"><'+'/script>'); } } oqsSurveyManager(window, 'ON'); /*]]>*/ </script> 
+ <script type="text/javascript"> window.pulse = { init: function(){/*stub*/} }; if (!window.oqs || oqs.usePulse) { document.write('<script type="text/javascript" src="http://static.bbci.co.uk/frameworks/pulsesurvey/0.10.1/script/pulse.js"><'+'/script>'); document.write('<script type="text/javascript" src="http://www.bbc.co.uk/survey/pulse/conf.js"><'+'/script>'); } </script> <script type="text/javascript"> pulse.translations = { intro: 'We are always looking to improve the site and your opinions count.', question: 'Do you have a few minutes to tell us what you think about this site?', accept: 'Yes', reject: 'No' };  </script> <link rel="stylesheet" href="http://static.bbci.co.uk/frameworks/pulsesurvey/0.10.1/style/pulse.css" type="text/css"/> <!--[if gte IE 6]> <style type="text/css"> .pulse-pop li{display:inline;width:40px} </style> <![endif]--> <!--[if IE 6]> <style type="text/css"> .pulse-pop li{display:inline;width:40px} .pulse-pop #pulse-q{background:url(http://static.bbci.co.uk/frameworks/pulsesurvey/0.10.1/img/pulse_bg.gif) no-repeat} .pulse-pop #pulse-a{background:url(http://static.bbci.co.uk/frameworks/pulsesurvey/0.10.1/img/pulse_bg.gif) bottom no-repeat;} </style> <![endif]--> <!--[if IE 7]> <style type="text/css">  .pulse-pop #pulse-a{zoom:1} </style> <![endif]-->   <!--[if IE 6]> <link type="text/css" rel="stylesheet" href="http://static.bbci.co.uk/locator/weather/0.19.0/style/locator-weather-ie6.css" /> <![endif]--> <script type="text/javascript"> window.locator = window.locator || {}; window.locator.suppressSearchResultEvents = true; </script>  <script type="text/javascript"> /*<![CDATA[*/ window.locator = window.locator || {}; window.locator.screen = 'desktop';  window.locator.search = window.locator.search || {};  window.locator.search['default'] = { options: { isPostcodeUnitAllowed: false, isPostcodeDistrictAllowed: true, truncationLengths: { search: 37, autocomplete: 39 }, filter: 'international', emitJavascriptEvent: false, language: 'en-GB', autosuggest: { enabled: true }, reversegeocode: { enabled: false } }, routes: { search: '/locator/:client/:lang/search.json', targetUri: '/weather/:location_id', reversegeocode: '/locator/default/:lang/reversegeocode.json?latitude=:latitude&longitude=:longitude', autosuggest: '/locator/:client/:lang/autocomplete.json?search={input}' }, translations: { prompt: 'Enter a town, county or UK postcode', error: { search: 'Sorry, we are experiencing technical problems.' }, close: 'Close location search results', tryAgain: 'Please try again', reversegeocode: { detect_label: 'Detect your location', permission_denied: 'Please enable Location Services in your device settings or browser.', permission_unavailable: 'Sorry, the \'detect your location\' feature is not currently available.', service_unavailable: 'Sorry, the \'detect your location\' feature is not currently available.', confirm: 'We have detected your location as', outsideContext: "Your location is not currently supported by this application." } } }; /*]]>*/ </script>         <!-- BBCDOTCOM template: desktop journalismVariant: false ipIsAdvertiseCombined: true adsEnabled: true  showDotcom: true flagpole: ON -->
+            <style type="text/css">.bbccom_display_none{display:none;}</style>
+<script type="text/javascript">
+    /*<![CDATA[*/
+    if (bbcdotcom === undefined) {
+        var bbcdotcom = {
+            data: {},
+            advert: {
+                write: function () {},
+                show: function () {},
+                isActive: function () {
+                    return false;
+                }
+            },
+            objects: function(str) {
+                return false;
+            }
+        };
+    }
+    bbcdotcom.objects = function (strName, action, obj) {
+        var nameParts, i, len;
+        nameParts = strName.split(".");
+        if (action === undefined) {
+            action = 'valid';
+        }
+        if (obj === undefined) {
+            obj = window;
+        }
+        for (i = 0, len = nameParts.length; i < len; i++) {
+            if (obj[nameParts[i]] === undefined) {
+                if (action === 'create') {
+                    obj[nameParts[i]] = {};
+                } else {
+                    return false;
+                }
+            } else if (typeof obj[nameParts[i]] === 'function') {
+                if(obj[nameParts[i]]() !== undefined) {
+                    return obj[nameParts[i]]();
+                }
+            }
+            obj = obj[nameParts[i]];
+        }
+        return obj;
+    };
+    bbcdotcom.objects('bbcdotcom.config', 'create');
+    bbcdotcom.config =(function(ads, analytics) {
+        var adsEnabled=ads,
+            analyticsEnabled=analytics,
+            jsPrefix="http://static.bbci.co.uk/bbcdotcom/0.3.233/script",
+            swfPrefix="http://static.bbci.co.uk/bbcdotcom/0.3.233/swf",
+            cssPrefix="http://static.bbci.co.uk/bbcdotcom/0.3.233/style";
+        return {
+            setAdsEnabled: function(enabled) {
+                /* Once it has been disable to not allow it to be enabled */
+                adsEnabled = (adsEnabled !== 0) ? enabled : 0;
+            },
+            isAdsEnabled: function() {
+                return adsEnabled;
+            },
+            setAnalyticsEnabled: function(enabled) {
+                /* Once it has been disable to not allow it to be enabled */
+                analyticsEnabled = (analyticsEnabled !== 0) ? enabled : 0;
+            },
+            isAnalyticsEnabled: function() {
+                return analyticsEnabled;
+            },
+            setJsPrefix: function (prefix) {
+                jsPrefix = prefix;
+            },
+            getJsPrefix: function () {
+                return jsPrefix;
+            },
+            setSwfPrefix: function (prefix) {
+                swfPrefix = prefix;
+            },
+            getSwfPrefix: function () {
+                return swfPrefix;
+            },
+            setCssPrefix: function (prefix) {
+                cssPrefix = prefix;
+            },
+            getCssPrefix: function () {
+                return cssPrefix;
+            }
+        };
+    }(1, 1));
+    bbcdotcom.objects('create', bbcdotcom, 'siteCatalyst');
+    bbcdotcom.siteCatalyst = {"ch":"","cdp":"3","ce":"UTF-8"};
+    bbcdotcom.objects('bbcdotcom.stats', 'create');
+    /* Create BBC.adverts skeleton */
+    if (BBC === undefined) {
+        var BBC = {};
+    }
+    if (BBC.adverts === undefined) {
+        BBC.adverts = {
+            setZone: function () {},
+            configure: function () {},
+            write: function () {},
+            show: function () {},
+            isActive: function () {
+                return false;
+            },
+            setScriptRoot: function () {},
+            setImgRoot: function () {},
+            getAdvertTag: function () {},
+            getSectionPath: function() {},
+            showPartnerButtons: function() {}
+        };
+    }
+    (function(){
+        if(typeof require !== 'undefined') {
+            require({
+                paths:{
+                    "bbcdotcom":"http://static.bbci.co.uk/bbcdotcom/0.3.233/script"
+                }
+            });
+        }
+    })();
+    if (typeof orb !== 'undefined' && typeof orb.fig === 'function') {
+        bbcdotcom.data = {
+            a: orb.fig('ad')? 1 : 0,
+            b: (0 == orb.fig('uk')) ? 1 : 0,
+            c: orb.fig('ap')
+        };
+    } else {
+        document.write('<script type="text/javascript" src="http://tps.bbc.com/wwscripts/data">\x3C/script>');
+    }
+    /*]]>*/
+</script>
+<script type="text/javascript">
+    /*<![CDATA[*/
+    if (typeof bbcdotcom.data == 'undefined' || typeof bbcdotcom.data.a == 'undefined' || typeof bbcdotcom.data.b == 'undefined' || typeof bbcdotcom.data.c == 'undefined') {
+        bbcdotcom.data = {a:0,b:0,c:0};
+    }
+    if (bbcdotcom.data.a == 1) {
+        document.write('<script type="text/javascript" src="http://www.bbc.co.uk/wwscripts/flag">\x3C/script>');
+    }
+    /*]]>*/
+</script>                           <script type="text/javascript">         /*<![CDATA[*/
+    if (typeof bbcdotcom.flag == 'undefined' || bbcdotcom.flag.a != 1) {
+                bbcdotcom.data.a = 0;
+    }
+</script>
+                <script type="text/javascript">
+            /*<![CDATA[*/
+            if(bbcdotcom.data.a == 1 || bbcdotcom.data.b == 1) {
+                document.write('<link rel="stylesheet" type="text/css" href="http://static.bbci.co.uk/bbcdotcom/0.3.233/style/3pt_ads.css" />');document.write('<script type="text/javascript" src="http://static.bbci.co.uk/bbcdotcom/0.3.233/script/bbccom.js">\x3C/script>');            }
+            /*]]>*/
+        </script>                                   <script type="text/javascript">                 /*<![CDATA[*/
+            if (bbcdotcom.data.a == 1 || bbcdotcom.data.b == 1) {
+                                BBC.adverts.setData(bbcdotcom.data);
+                bbcdotcom.config.setAdsEnabled(bbcdotcom.data.a);
+                bbcdotcom.config.setAnalyticsEnabled(bbcdotcom.data.b);
+            }
+            if (bbcdotcom.data.a == 1) {
+                                (function(){
+                    var zoneFile = "3pt_zone_file";
+
+                    bbcdotcom.objects('page', 'create', bbcdotcom);
+                                        
+                                                            BBC.adverts.setScriptRoot("http://static.bbci.co.uk/bbcdotcom/0.3.233/script/");
+                    BBC.adverts.setImgRoot("http://static.bbci.co.uk/bbcdotcom/0.3.233/img/");
+                    BBC.adverts.init({
+                        domain: "www.bbc.co.uk",
+                        location: window.location.pathname,
+                        zoneVersion: zoneFile,
+                        zoneAuto: false,
+                        siteAuto: false,
+                        keywordsAuto: false,
+                        zoneReferrer: document.referrer
+                    });
+                })();
+                if(typeof bbcdotcom !== 'undefined' && typeof bbcdotcom.survey !== 'undefined' && typeof bbcdotcom.survey.init === 'function') {
+                    bbcdotcom.survey.init();
+                }
+            }
+            /*]]>*/
+        </script>
+      <meta content="NOODP" name="robots"> <meta property="og:type" content="article"> <meta property="og:url" content="http://www.bbc.co.uk/weather/hp14"> <meta property="og:site_name" content="BBC Weather"> <meta property="og:image" content="http://static.bbci.co.uk/weather/0.5.284/images/og-tag-logo.png"> <meta property="twitter:card" content="summary"> <meta property="twitter:site" content="@BBCWeather"> <meta property="twitter:creator" content="@BBCWeather"> <meta property="twitter:app:name:iphone" content="BBC Weather"> <meta property="twitter:app:name:googleplay" content="BBC Weather"> <meta property="twitter:app:id:iphone" content="649420946"> <meta property="twitter:app:id:googleplay" content="bbc.mobile.weather"> <meta name="application-name" content="BBC Weather"> <meta name="msapplication-TileImage" content="http://static.bbci.co.uk/weather/0.5.284/images/pin-logo.png"> <meta name="msapplication-TileColor" content="#226083"> <!--[if (IE 6)|(IE 7)|(IE 8)]> <link rel="stylesheet" href="http://static.bbci.co.uk/weather/0.5.284/css/ie678.css" /> <![endif]--> <!--[if (IE 8)]> <link rel="stylesheet" href="http://static.bbci.co.uk/weather/0.5.284/css/ie8.css" /> <![endif]-->  <link rel="canonical" href="http://www.bbc.co.uk/weather/hp14" />  <link rel="alternate" hreflang="en-GB" href="http://www.bbc.co.uk/weather/hp14"/>  <link rel="alternate" hreflang="en" href="http://www.bbc.com/weather/hp14"/>  <link rel="alternate" hreflang="ga-GB" href="http://www.bbc.co.uk/weather/ga/hp14"/>  <link rel="alternate" hreflang="ga" href="http://www.bbc.com/weather/ga/hp14"/>  <link rel="alternate" hreflang="gd-GB" href="http://www.bbc.co.uk/weather/gd/hp14"/>  <link rel="alternate" hreflang="gd" href="http://www.bbc.com/weather/gd/hp14"/>  <link rel="alternate" hreflang="cy-GB" href="http://www.bbc.co.uk/weather/cy/hp14"/>  <link rel="alternate" hreflang="cy" href="http://www.bbc.com/weather/cy/hp14"/>   <link href="http://static.bbci.co.uk/weather/0.5.284/css/core.css" rel="stylesheet" /> <script src="http://static.bbci.co.uk/weather/0.5.284/javascripts/initial-state.js"></script>  <script type="text/javascript"> /*<![CDATA[*/ requirejs.config({ locale: 'en-GB', paths: { 'translations' : 'http://static.bbci.co.uk/weather/0.5.284/modules/translations' } }); window.weather = window.weather || {}; weather.config = weather.config || {}; weather.config.static_host = 'http://static.bbci.co.uk'; weather.config.env = 'live'; weather.config.version = '0.5.284'; weather.config.language = 'en';  /*]]>*/ </script>  <script> /*<![CDATA[*/ function syncRoadBlock(src,companionId) { var compidarg; if (arguments.length == 2 && typeof companionId == 'string') { compidarg = companionId; } BBC.adverts.empCompanionResponse(src, compidarg); }; pt=new Object(); pt.aenab = "yes"; /*]]>*/ </script>   <meta property="og:title" content="BBC Weather - HP14"/> <meta property="og:description" content="Hourly weather for HP14 with a 5 to 10 day forecast, giving a look further ahead."> <script type="text/javascript">  var TABBED_FORECAST = { offset: 0, locationId: null, language: 'en', activeDay: 0 };  window.weather = window.weather || {}; weather.location = weather.location || {}; weather.location.id = 'hp14'; weather.location.name = 'HP14'; </script> <!-- Version: 0.5.284 Forecast ID: 17328 -->                         </head> <body class="ambience-weather-type-10 bbc-weather disable-wide-advert edition-domestic lang-en initial-temperature-unit-c initial-windspeed-unit-mph initial-distance-unit-miles weather-pagetype-forecast">        <!-- BBCDOTCOM body first -->
+                <script type="text/javascript">BBC.adverts.write("wallpaper",false);</script>
+        
+ <!-- End iStats (UX-CMC) -->   <div id="blq-global"> <noscript> <div id="blq-no-js-banner"> <p>For a better experience on your device, try our <a href="http://m.bbc.co.uk">mobile site</a>.</p> </div> </noscript> <div id="blq-pre-mast" lang="en-GB"> <!-- Pre mast --> 
+<!-- BBCDOTCOM leaderboard template:client-side journalismVariant: false ipIsAdvertiseCombined: true adsEnabled: true showDotcom: true flagpole: ON showAdAboveBlq: true blqLeaderboardAd: true -->
+            <div id="bbccom_leaderboard_container">
+                    <div id="bbccom_leaderboard" class="bbccom_display_none bbccom_leaderboard">
+        <script type="text/javascript">BBC.adverts.write("leaderboard", true);</script>
+    </div>
+    <script type="text/javascript">BBC.adverts.show("leaderboard");</script>
+        </div>
+     </div> </div>  <script type="text/javascript">/*<![CDATA[*/ (function(){if(bbccookies._showPrompt()){var i=document,b=i.getElementById("blq-pre-mast"),f=i.getElementById("blq-global"),h=i.getElementById("blq-container"),c=i.getElementById("blq-bbccookies-tmpl"),a,g,e;if(b&&i.createElement){a=i.createElement("div");a.id="bbccookies";e=c.innerHTML;e=e.replace("<"+"![CDATA[","").replace("]]"+">","");a.innerHTML=e;if(f){f.insertBefore(a,b)}else{h.insertBefore(a,b)}g=i.getElementById("bbccookies-continue-button");g.onclick=function(){a.parentNode.removeChild(a);return false};bbccookies._setPolicy()}}})(); /*]]>*/</script>  <div id="blq-masthead" class="blq-clearfix blq-mast-bg-transparent-light blq-lang-en-GB blq-ltr"> <span id="blq-mast-background"><span></span></span>  <div id="blq-mast" class="blq-rst">  <div id="blq-mast-bar" class="blq-masthead-container blq-default-worldwide"> <div id="blq-blocks"> <a href="/" hreflang="en-GB"> <abbr title="British Broadcasting Corporation" class="blq-home"> <img src="http://static.bbci.co.uk/frameworks/barlesque/2.60.6/desktop/3.5/img/blq-blocks_grey_alpha.png" alt="BBC" width="84" height="24" /> </abbr> </a> </div> <div id="blq-acc-links"> <h2 id="page-top">Accessibility links</h2> <ul>  <li><a href="#blq-content">Skip to content</a></li>  <li><a href="#blq-local-nav">Skip to local navigation</a></li>  <li><a href="/accessibility/">Accessibility Help</a></li> </ul> </div> <div id="blq-sign-in" class="blq-gel">  </div> <div id="blq-nav"> <h2>BBC navigation</h2>     <ul id="blq-nav-main">   <li id="blq-nav-news"> <a href="http://www.bbc.com/news/">News</a> </li>    <li id="blq-nav-sport"> <a href="http://www.bbc.co.uk/sport/">Sport</a> </li>    <li id="blq-nav-weather"> <a href="http://www.bbc.co.uk/weather/">Weather</a> </li>    <li id="blq-nav-capital"> <a href="http://www.bbc.com/capital/">Capital</a> </li>    <li id="blq-nav-future"> <a href="http://www.bbc.com/future/">Future</a> </li>    <li id="blq-nav-shop"> <a href="http://shop.bbc.com/">Shop</a> </li>    <li id="blq-nav-tv"> <a href="/tv/">TV</a> </li>    <li id="blq-nav-radio"> <a href="/radio/">Radio</a> </li>    <li id="blq-nav-more"> <a href="/a-z/">More&hellip;</a> </li>   </ul>   <div id="blq-nav-search"> <form method="get" action="http://search.bbc.co.uk/search" accept-charset="utf-8" id="blq-search-form"> <div>  <input type="hidden" name="go" value="toolbar" />  <input type="hidden" name="uri" value="/weather/hp14" />    <label for="blq-search-q" class="blq-hide">Search term:</label> <input id="blq-search-q" type="text" name="q" value="" maxlength="128" /> <button id="blq-search-btn" type="submit"><span><img src="http://static.bbci.co.uk/frameworks/barlesque/2.60.6/desktop/3.5/img/blq-search_grey_alpha.png" width="13" height="13" alt="Search"/></span></button> </div> </form> </div>  </div> </div> </div> </div> <div id="blq-container-outer" class="blq-default-worldwide blq-ltr" >  <div id="blq-container" class="blq-lang-en-GB blq-dotcom"> <div id="blq-container-inner" lang="en-GB">   <div id="blq-main" class="blq-clearfix">                    <div id='blq-content' role="main">  <div class="site-masthead">  <h1> <a class="site-name" href="/weather/" >Weather</a > <span class="location-name" title="HP14">HP14</span> </h1> <p class="forecast-last-updated">Last updated 13:23</p>  </div>   <div class="site-options"> <div class="add-state"></div> <div class="settings-control">Settings</div> <div class="settings-panel"> <span class="arrow-up"></span>   <div id="unit-picker"> <ul class="temp unit-options" data-unit-type="temperature"> <li data-unit="c" class="unit-option unit-option-c selected" >°C</li> <li data-unit="f" class="unit-option unit-option-f " ><a href="/weather/hp14?tempUnit=F" rel="nofollow">°F</a></li> </ul> <ul class="wind unit-options" data-unit-type="windspeed"> <li data-unit="mph" class="unit-option unit-option-mph selected"> mph </li> <li data-unit="kph" class="unit-option unit-option-kph "> <a href="/weather/hp14?windUnit=K" rel="nofollow">km/h</a> </li> </ul> </div> <script>bbc.weather.setInitialUnitPickerState('unit-picker')</script>  </div> <div class="language-control">Language</div> <div class="language-panel"> <span class="arrow-up"></span>   <div class="language-picker"> <ul>  <li class="selected lang-en" lang="en">  English  </li>  <li class=" lang-ga" lang="ga">  <a href="/weather/ga/hp14">  Gaeilge  </a>  </li>  <li class=" lang-gd" lang="gd">  <a href="/weather/gd/hp14">  Gàidhlig  </a>  </li>  <li class=" lang-cy" lang="cy">  <a href="/weather/cy/hp14">  Cymraeg  </a>  </li>  </ul> </div>  </div> </div>          
+<div id="find-a-forecast" role="search" data-search-placeholder="Enter a town, country or UK postcode">
+    <h2>Find a Forecast</h2>
+         <div class="locator-weather">               <div class="locator-component"> <div class="locator-search" id="locator-search-default">  <form action="/weather/hp14" method="get"><div>
+<span class="locator-search-input"><label for="locator-form-search" class="required">Search for a location</label>
+
+<input type="text" name="search" id="locator-form-search" value="" title="Search for a location" maxlength="75" /></span>
+
+<input type="submit" name="submitBtn" id="locator-form-submit" value="Search" class="locator-submit" title="Search for location" />
+
+<input type="hidden" name="page" value="" id="locator-form-page" />
+
+
+<input type="hidden" name="instanceId" value="" id="locator-form-instance-id" /></div></form>  </div> </div>      
+
+
+
+ </div> 
+
+
+
+     
+<div id="favourites"
+     data-ajax-path="/weather/${id}/location-now-weather">
+
+    <h2><span class="arrow"></span>Favourite Locations (<span class="count">&mdash;</span>)</h2>
+
+    <noscript>You need javascript enabled to save favourites.</noscript>
+
+    <div class="templates">
+        
+            <div class="favourites-list-content">
+                <div class="message loading">
+                    <span class="loader">Loading</span>
+                </div>
+                <ul></ul>
+                <div class="sharedcookie-note"></div>
+                <div class="edit-state">
+                    <div class="manage"></div>
+                </div>
+                <div class="sharedcookie-legend"></div>
+            </div>
+        
+
+            <button class="add uk">
+                <span>Add to favourites</span>
+            </button>
+
+            <button class="edit">
+                Edit<span> favourites</span>            </button>
+
+            <button class="save">
+                Save<span> favourites</span>            </button>
+            <button class="cancel">
+                Cancel            </button>
+
+            <p>We will use the starred location to give you relevant local information across the BBC.</p>
+
+            <p>Edit your location and get relevant local information across the BBC.</p>
+
+            <p>favourites.sharedCookie.legendShareRemoved</p>
+
+            <p>We will now use <strong>${locationName}</strong> to give you relevant local information across the BBC.</p>
+
+            <p>This means we will no longer use <strong>${locationName}</strong> to give you relevant local information across the BBC.</p>
+    </div> <!-- .templates -->
+</div><!-- #favourites -->
+ </div>    
+
+
+
+
+<div id="forecast-data-table" class="off-screen">
+    <table class="forecast daily-forecast">
+        <caption>Daily forecast</caption>
+        <colgroup>
+            <col class="col-dayname" />
+            <col class="col-weathertype" />
+            <col class="col-min-temp" />
+            <col class="col-max-temp" />
+            <col class="col-windspeeddir" />
+        </colgroup>
+        <thead>
+            <tr class="heading">
+                <th class="dayname" style="text-align:left;">Day</th>
+                <th class="weather" style="text-align:left;">Weather</th>
+                <th class="max-temp">Maximum Day Temperature</th>
+                <th class="min-temp">Minimum Night Temperature</th>
+                <th class="wind">Wind Direction and Speed</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr class="day">
+        <td class="dayname">
+            Thursday        </td>
+        <td class="weather">
+                    <p>Light Rain Shower</p>
+        </td>
+        <td class="max-temp">
+                    <span class="temp-7-9">
+        <span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">9<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">48<span class="unit">°F</span></span></span>    </span>
+        </td>
+        <td class="min-temp">
+                    <span class="temp-1-3">
+        <span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">3<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">37<span class="unit">°F</span></span></span>    </span>
+        </td>
+        <td class="wind">
+                    <span class="wind-direction">Easterly</span>
+    <br>
+    <span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">16<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">10<span class="unit">mph</span></span></span>        </td>
+    </tr>
+    <tr class="day">
+        <td class="dayname">
+            Friday        </td>
+        <td class="weather">
+                    <p>Light Cloud</p>
+        </td>
+        <td class="max-temp">
+                    <span class="temp-10-12">
+        <span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">11<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">52<span class="unit">°F</span></span></span>    </span>
+        </td>
+        <td class="min-temp">
+                    <span class="temp-4-6">
+        <span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">5<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">41<span class="unit">°F</span></span></span>    </span>
+        </td>
+        <td class="wind">
+                    <span class="wind-direction">East South Easterly</span>
+    <br>
+    <span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">18<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">11<span class="unit">mph</span></span></span>        </td>
+    </tr>
+    <tr class="day">
+        <td class="dayname">
+            Saturday        </td>
+        <td class="weather">
+                    <p>Sunny</p>
+        </td>
+        <td class="max-temp">
+                    <span class="temp-13-15">
+        <span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">15<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">59<span class="unit">°F</span></span></span>    </span>
+        </td>
+        <td class="min-temp">
+                    <span class="temp-7-9">
+        <span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">7<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">45<span class="unit">°F</span></span></span>    </span>
+        </td>
+        <td class="wind">
+                    <span class="wind-direction">East South Easterly</span>
+    <br>
+    <span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">23<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">14<span class="unit">mph</span></span></span>        </td>
+    </tr>
+    <tr class="day">
+        <td class="dayname">
+            Sunday        </td>
+        <td class="weather">
+                    <p>Light Cloud</p>
+        </td>
+        <td class="max-temp">
+                    <span class="temp-13-15">
+        <span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">15<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">59<span class="unit">°F</span></span></span>    </span>
+        </td>
+        <td class="min-temp">
+                    <span class="temp-7-9">
+        <span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">8<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">46<span class="unit">°F</span></span></span>    </span>
+        </td>
+        <td class="wind">
+                    <span class="wind-direction">South Easterly</span>
+    <br>
+    <span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">18<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">11<span class="unit">mph</span></span></span>        </td>
+    </tr>
+    <tr class="day">
+        <td class="dayname">
+            Monday        </td>
+        <td class="weather">
+                    <p>Light Rain Shower</p>
+        </td>
+        <td class="max-temp">
+                    <span class="temp-13-15">
+        <span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">15<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">59<span class="unit">°F</span></span></span>    </span>
+        </td>
+        <td class="min-temp">
+                    <span class="temp-7-9">
+        <span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">7<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">45<span class="unit">°F</span></span></span>    </span>
+        </td>
+        <td class="wind">
+                    <span class="wind-direction">South Easterly</span>
+    <br>
+    <span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">999<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">9<span class="unit">mph</span></span></span>        </td>
+    </tr>
+        </tbody>
+    </table>
+    <p></p>
+</div>
+               <div id="bbccom_sponsor_section" class="bbccom_display_none">
+            <div id="bbccom_sponsor_section_text">IN ASSOCIATION WITH</div>
+            <div id="bbccom_sponsor_section_image"><script type="text/javascript">BBC.adverts.write("sponsor_section",false);</script></div>
+        </div>
+
+        <script type="text/javascript">BBC.adverts.show("sponsor_section");</script>
+                  <div id="bbccom_mpu" class="bbccom_display_none">
+            <script type="text/javascript">BBC.adverts.write("mpu",true);</script>
+        </div>
+        <script type="text/javascript">BBC.adverts.show("mpu");</script>
+         
+<h2 class="blq-hide">Forecast</h2>
+<div class="tabbed-forecast">
+            <div class="forecast-options">
+                        <a tabindex="-1" href="/weather/hp14"
+                id="basic-forecast"
+                class="forecast-switcher hidden"
+                data-direction="previous"><span class="arrow"></span><span>First five days</span></a>
+            <a tabindex="-1" href="/weather/hp14/extended"
+                id="extended-forecast"
+                class="forecast-switcher "
+                data-direction="ahead"><span class="arrow"></span><span>Further ahead</span></a>
+        </div>
+    
+    <div class="daily-window">
+        <ul class="daily">
+                
+    <li class="day-20140327 first active ">
+        <a rel="nofollow" href="/weather/hp14?day=0"
+            data-ajax-href="/weather/en/hp14/daily/2014-03-27?day=0">
+                    <h3>
+        <span class="day-name"><span class="abbrev">Thu</span><span class="blq-hide">rsday</span></span>
+            </h3>
+                    <span title="Light Rain Shower" class="weather-type-image weather-type-image-40"
+            ><img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/tab_sprites/40px/10.png" alt="Light Rain Shower"
+            /></span>
+                    <span class="max-temp max-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">9<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">48<span class="unit">°F</span></span></span></span>
+        <span class="min-temp min-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">3<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">37<span class="unit">°F</span></span></span></span>
+                <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-e"
+          title="10mph, Easterly"
+          data-tooltip-kph="16km/h, Easterly"
+          data-tooltip-mph="10mph, Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">16<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">10<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">Easterly</span>
+    </span>
+        </a>
+    </li>
+    
+    <li class="day-20140328   ">
+        <a rel="nofollow" href="/weather/hp14?day=1"
+            data-ajax-href="/weather/en/hp14/daily/2014-03-28?day=1">
+                    <h3>
+        <span class="day-name"><span class="abbrev">Fri</span><span class="blq-hide">day</span></span>
+            </h3>
+                    <span title="Light Cloud" class="weather-type-image weather-type-image-40"
+            ><img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/tab_sprites/40px/7.png" alt="Light Cloud"
+            /></span>
+                    <span class="max-temp max-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">11<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">52<span class="unit">°F</span></span></span></span>
+        <span class="min-temp min-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">5<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">41<span class="unit">°F</span></span></span></span>
+                <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-ese"
+          title="11mph, East South Easterly"
+          data-tooltip-kph="18km/h, East South Easterly"
+          data-tooltip-mph="11mph, East South Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">18<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">11<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">East South Easterly</span>
+    </span>
+        </a>
+    </li>
+    
+    <li class="day-20140329   ">
+        <a rel="nofollow" href="/weather/hp14?day=2"
+            data-ajax-href="/weather/en/hp14/daily/2014-03-29?day=2">
+                    <h3>
+        <span class="day-name"><span class="abbrev">Sat</span><span class="blq-hide">urday</span></span>
+            </h3>
+                    <span title="Sunny" class="weather-type-image weather-type-image-40"
+            ><img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/tab_sprites/40px/1.png" alt="Sunny"
+            /></span>
+                    <span class="max-temp max-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">15<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">59<span class="unit">°F</span></span></span></span>
+        <span class="min-temp min-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">7<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">45<span class="unit">°F</span></span></span></span>
+                <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-ese"
+          title="14mph, East South Easterly"
+          data-tooltip-kph="23km/h, East South Easterly"
+          data-tooltip-mph="14mph, East South Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">23<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">14<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">East South Easterly</span>
+    </span>
+        </a>
+    </li>
+    
+    <li class="day-20140330   ">
+        <a rel="nofollow" href="/weather/hp14?day=3"
+            data-ajax-href="/weather/en/hp14/daily/2014-03-30?day=3">
+                    <h3>
+        <span class="day-name"><span class="abbrev">Sun</span><span class="blq-hide">day</span></span>
+            </h3>
+                    <span title="Light Cloud" class="weather-type-image weather-type-image-40"
+            ><img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/tab_sprites/40px/7.png" alt="Light Cloud"
+            /></span>
+                    <span class="max-temp max-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">15<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">59<span class="unit">°F</span></span></span></span>
+        <span class="min-temp min-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">8<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">46<span class="unit">°F</span></span></span></span>
+                <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-se"
+          title="11mph, South Easterly"
+          data-tooltip-kph="18km/h, South Easterly"
+          data-tooltip-mph="11mph, South Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">18<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">11<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">South Easterly</span>
+    </span>
+        </a>
+    </li>
+    
+    <li class="day-20140331   last-child">
+        <a rel="nofollow" href="/weather/hp14?day=4"
+            data-ajax-href="/weather/en/hp14/daily/2014-03-31?day=4">
+                    <h3>
+        <span class="day-name"><span class="abbrev">Mon</span><span class="blq-hide">day</span></span>
+            </h3>
+                    <span title="Light Rain Shower" class="weather-type-image weather-type-image-40"
+            ><img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/tab_sprites/40px/10.png" alt="Light Rain Shower"
+            /></span>
+                    <span class="max-temp max-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">15<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">59<span class="unit">°F</span></span></span></span>
+        <span class="min-temp min-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">7<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">45<span class="unit">°F</span></span></span></span>
+                <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-se"
+          title="9mph, South Easterly"
+          data-tooltip-kph="14km/h, South Easterly"
+          data-tooltip-mph="9mph, South Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">14<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">9<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">South Easterly</span>
+    </span>
+        </a>
+    </li>
+        </ul>
+    </div>
+
+    <ul id="all-daily-tabs">
+            
+    <li class="day-20140327 first active ">
+        <a rel="nofollow" href="/weather/hp14?day=0"
+            data-ajax-href="/weather/en/hp14/daily/2014-03-27?day=0">
+                    <h3>
+        <span class="day-name"><span class="abbrev">Thu</span><span class="blq-hide">rsday</span></span>
+            </h3>
+                    <span title="Light Rain Shower" class="weather-type-image weather-type-image-40"
+            ><img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/tab_sprites/40px/10.png" alt="Light Rain Shower"
+            /></span>
+                    <span class="max-temp max-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">9<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">48<span class="unit">°F</span></span></span></span>
+        <span class="min-temp min-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">3<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">37<span class="unit">°F</span></span></span></span>
+                <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-e"
+          title="10mph, Easterly"
+          data-tooltip-kph="16km/h, Easterly"
+          data-tooltip-mph="10mph, Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">16<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">10<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">Easterly</span>
+    </span>
+        </a>
+    </li>
+    
+    <li class="day-20140328   ">
+        <a rel="nofollow" href="/weather/hp14?day=1"
+            data-ajax-href="/weather/en/hp14/daily/2014-03-28?day=1">
+                    <h3>
+        <span class="day-name"><span class="abbrev">Fri</span><span class="blq-hide">day</span></span>
+            </h3>
+                    <span title="Light Cloud" class="weather-type-image weather-type-image-40"
+            ><img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/tab_sprites/40px/7.png" alt="Light Cloud"
+            /></span>
+                    <span class="max-temp max-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">11<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">52<span class="unit">°F</span></span></span></span>
+        <span class="min-temp min-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">5<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">41<span class="unit">°F</span></span></span></span>
+                <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-ese"
+          title="11mph, East South Easterly"
+          data-tooltip-kph="18km/h, East South Easterly"
+          data-tooltip-mph="11mph, East South Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">18<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">11<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">East South Easterly</span>
+    </span>
+        </a>
+    </li>
+    
+    <li class="day-20140329   ">
+        <a rel="nofollow" href="/weather/hp14?day=2"
+            data-ajax-href="/weather/en/hp14/daily/2014-03-29?day=2">
+                    <h3>
+        <span class="day-name"><span class="abbrev">Sat</span><span class="blq-hide">urday</span></span>
+            </h3>
+                    <span title="Sunny" class="weather-type-image weather-type-image-40"
+            ><img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/tab_sprites/40px/1.png" alt="Sunny"
+            /></span>
+                    <span class="max-temp max-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">15<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">59<span class="unit">°F</span></span></span></span>
+        <span class="min-temp min-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">7<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">45<span class="unit">°F</span></span></span></span>
+                <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-ese"
+          title="14mph, East South Easterly"
+          data-tooltip-kph="23km/h, East South Easterly"
+          data-tooltip-mph="14mph, East South Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">23<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">14<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">East South Easterly</span>
+    </span>
+        </a>
+    </li>
+    
+    <li class="day-20140330   ">
+        <a rel="nofollow" href="/weather/hp14?day=3"
+            data-ajax-href="/weather/en/hp14/daily/2014-03-30?day=3">
+                    <h3>
+        <span class="day-name"><span class="abbrev">Sun</span><span class="blq-hide">day</span></span>
+            </h3>
+                    <span title="Light Cloud" class="weather-type-image weather-type-image-40"
+            ><img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/tab_sprites/40px/7.png" alt="Light Cloud"
+            /></span>
+                    <span class="max-temp max-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">15<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">59<span class="unit">°F</span></span></span></span>
+        <span class="min-temp min-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">8<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">46<span class="unit">°F</span></span></span></span>
+                <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-se"
+          title="11mph, South Easterly"
+          data-tooltip-kph="18km/h, South Easterly"
+          data-tooltip-mph="11mph, South Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">18<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">11<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">South Easterly</span>
+    </span>
+        </a>
+    </li>
+    
+    <li class="day-20140331   last-child">
+        <a rel="nofollow" href="/weather/hp14?day=4"
+            data-ajax-href="/weather/en/hp14/daily/2014-03-31?day=4">
+                    <h3>
+        <span class="day-name"><span class="abbrev">Mon</span><span class="blq-hide">day</span></span>
+            </h3>
+                    <span title="Light Rain Shower" class="weather-type-image weather-type-image-40"
+            ><img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/tab_sprites/40px/10.png" alt="Light Rain Shower"
+            /></span>
+                    <span class="max-temp max-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">15<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">59<span class="unit">°F</span></span></span></span>
+        <span class="min-temp min-temp-value"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">7<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">45<span class="unit">°F</span></span></span></span>
+                <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-se"
+          title="9mph, South Easterly"
+          data-tooltip-kph="14km/h, South Easterly"
+          data-tooltip-mph="9mph, South Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">14<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">9<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">South Easterly</span>
+    </span>
+        </a>
+    </li>
+    
+    <li class="day-20140401   ">
+        <a rel="nofollow" href="/weather/hp14/extended?day=5"
+            data-ajax-href="/weather/en/hp14/daily/2014-04-01?day=5">
+                    <h3>
+        <span class="day-name"><span class="abbrev">Tue</span><span class="blq-hide">sday</span></span>
+            </h3>
+                    <span title="Light Rain Shower" class="weather-type-image weather-type-image-40"
+            ><img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/tab_sprites/40px/10.png" alt="Light Rain Shower"
+            /></span>
+                    <span class="max-temp max-temp-range"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">10/17<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">50/63<span class="unit">°F</span></span></span></span>
+        <span class="min-temp min-temp-range"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">3/10<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">37/50<span class="unit">°F</span></span></span></span>
+                <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-se"
+          title="8mph, South Easterly"
+          data-tooltip-kph="13km/h, South Easterly"
+          data-tooltip-mph="8mph, South Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">13<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">8<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">South Easterly</span>
+    </span>
+        </a>
+    </li>
+    
+    <li class="day-20140402   ">
+        <a rel="nofollow" href="/weather/hp14/extended?day=6"
+            data-ajax-href="/weather/en/hp14/daily/2014-04-02?day=6">
+                    <h3>
+        <span class="day-name"><span class="abbrev">Wed</span><span class="blq-hide">nesday</span></span>
+            </h3>
+                    <span title="Light Cloud" class="weather-type-image weather-type-image-40"
+            ><img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/tab_sprites/40px/7.png" alt="Light Cloud"
+            /></span>
+                    <span class="max-temp max-temp-range"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">8/18<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">46/64<span class="unit">°F</span></span></span></span>
+        <span class="min-temp min-temp-range"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">2/11<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">36/52<span class="unit">°F</span></span></span></span>
+                <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-e"
+          title="12mph, Easterly"
+          data-tooltip-kph="19km/h, Easterly"
+          data-tooltip-mph="12mph, Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">19<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">12<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">Easterly</span>
+    </span>
+        </a>
+    </li>
+    
+    <li class="day-20140403   ">
+        <a rel="nofollow" href="/weather/hp14/extended?day=7"
+            data-ajax-href="/weather/en/hp14/daily/2014-04-03?day=7">
+                    <h3>
+        <span class="day-name"><span class="abbrev">Thu</span><span class="blq-hide">rsday</span></span>
+                    <span class="day-and-month"> 3 Apr</span>
+            </h3>
+                    <span title="Light Rain Shower" class="weather-type-image weather-type-image-40"
+            ><img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/tab_sprites/40px/10.png" alt="Light Rain Shower"
+            /></span>
+                    <span class="max-temp max-temp-range"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">5/17<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">41/63<span class="unit">°F</span></span></span></span>
+        <span class="min-temp min-temp-range"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">1/10<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">34/50<span class="unit">°F</span></span></span></span>
+                <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-ese"
+          title="14mph, East South Easterly"
+          data-tooltip-kph="23km/h, East South Easterly"
+          data-tooltip-mph="14mph, East South Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">23<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">14<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">East South Easterly</span>
+    </span>
+        </a>
+    </li>
+    
+    <li class="day-20140404   ">
+        <a rel="nofollow" href="/weather/hp14/extended?day=8"
+            data-ajax-href="/weather/en/hp14/daily/2014-04-04?day=8">
+
+                    <h3>
+        <span class="day-name"><span class="abbrev">Fri</span><span class="blq-hide">day</span></span>
+                    <span class="day-and-month"> 4 Apr</span>
+            </h3>
+                    <span title="Light Rain Shower" class="weather-type-image weather-type-image-40"
+            ><img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/tab_sprites/40px/10.png" alt="Light Rain Shower"
+            /></span>
+                    <span class="max-temp max-temp-range"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">5/15<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">41/59<span class="unit">°F</span></span></span></span>
+        <span class="min-temp min-temp-range"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">-2/8<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">28/46<span class="unit">°F</span></span></span></span>
+                <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-se"
+          title="12mph, South Easterly"
+          data-tooltip-kph="19km/h, South Easterly"
+          data-tooltip-mph="12mph, South Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">19<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">12<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">South Easterly</span>
+    </span>
+        </a>
+    </li>
+    
+    <li class="day-20140405   ">
+        <a rel="nofollow" href="/weather/hp14/extended?day=9"
+            data-ajax-href="/weather/en/hp14/daily/2014-04-05?day=9">
+                    <h3>
+        <span class="day-name"><span class="abbrev">Sat</span><span class="blq-hide">urday</span></span>
+                    <span class="day-and-month"> 5 Apr</span>
+            </h3>
+                    <span title="Light Rain Shower" class="weather-type-image weather-type-image-40"
+            ><img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/tab_sprites/40px/10.png" alt="Light Rain Shower"
+            /></span>
+                    <span class="max-temp max-temp-range"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">5/14<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">41/57<span class="unit">°F</span></span></span></span>
+        <span class="min-temp min-temp-range"><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">-2/8<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">28/46<span class="unit">°F</span></span></span></span>
+                <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-sw"
+          title="10mph, South Westerly"
+          data-tooltip-kph="16km/h, South Westerly"
+          data-tooltip-mph="10mph, South Westerly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">16<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">10<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">South Westerly</span>
+    </span>
+        </a>
+    </li>
+    </ul>
+
+    <div class="daily-details">
+        <div class="inner">
+                    <div class="hourly">
+                            <div id="hourly" class="day-0 dataview moving-window">
+    <div class="sunrise-sunset">
+                    <span class="sunrise">Sunrise 05:51</span>
+                        <span class="sunset">Sunset 18:28</span>
+        </div>
+        <div class="detail-container group">
+            <button id="detail-graph-view" class="active" data-view-classname="infographic">Graph</button>
+            <button id="detail-table-view" data-view-classname="dataview">Table</button>
+        </div>
+                <div class="table-container selected slot-offset-0">
+            
+<table class="weather moving-window three-hourly-0 one-hourly-16">
+    <caption>Weather forecast details for Thursday 27 March. Each column contains hourly forecast details for weather conditions, temperature, wind speed, wind direction, humidity, visibility and pressure.</caption>
+    <thead>
+    <tr class="time">
+        <th class="row-title">Time</th>
+<th class="value hours-1"><span class="hour">14</span><span class="mins">00</span><span class="blq-hide">&nbsp;hours</span></th><th class="value hours-1"><span class="hour">15</span><span class="mins">00</span><span class="blq-hide">&nbsp;hours</span></th><th class="value hours-1"><span class="hour">16</span><span class="mins">00</span><span class="blq-hide">&nbsp;hours</span></th><th class="value hours-1"><span class="hour">17</span><span class="mins">00</span><span class="blq-hide">&nbsp;hours</span></th><th class="value hours-1"><span class="hour">18</span><span class="mins">00</span><span class="blq-hide">&nbsp;hours</span></th><th class="value hours-1"><span class="hour">19</span><span class="mins">00</span><span class="blq-hide">&nbsp;hours</span></th><th class="value hours-1"><span class="hour">20</span><span class="mins">00</span><span class="blq-hide">&nbsp;hours</span></th><th class="value hours-1"><span class="hour">21</span><span class="mins">00</span><span class="blq-hide">&nbsp;hours</span></th><th class="value hours-1"><span class="hour">22</span><span class="mins">00</span><span class="blq-hide">&nbsp;hours</span></th><th class="value hours-1"><span class="hour">23</span><span class="mins">00</span><span class="blq-hide">&nbsp;hours</span></th><th class="value hours-1 next-day"><span class="hour">00</span><span class="mins">00</span><span class="blq-hide">&nbsp;hours</span><br/><span class="new-day">Fri</span></th><th class="value hours-1 next-day"><span class="hour">01</span><span class="mins">00</span><span class="blq-hide">&nbsp;hours</span></th><th class="value hours-1 next-day"><span class="hour">02</span><span class="mins">00</span><span class="blq-hide">&nbsp;hours</span></th><th class="value hours-1 next-day"><span class="hour">03</span><span class="mins">00</span><span class="blq-hide">&nbsp;hours</span></th><th class="value hours-1 next-day"><span class="hour">04</span><span class="mins">00</span><span class="blq-hide">&nbsp;hours</span></th><th class="value hours-1 next-day"><span class="hour">05</span><span class="mins">00</span><span class="blq-hide">&nbsp;hours</span></th><th class="hours-1 empty">&nbsp;</th><th class="hours-1 empty">&nbsp;</th><th class="hours-1 empty">&nbsp;</th><th class="hours-1 empty">&nbsp;</th><th class="hours-1 empty">&nbsp;</th><th class="hours-1 empty">&nbsp;</th><th class="hours-1 empty">&nbsp;</th><th class="hours-1 empty">&nbsp;</th>    </tr>
+    </thead>
+    <tbody>
+    <tr class="weather-type">
+        <th class="row-title">Weather Conditions</th>
+                        <td class="hours-1"><span class="content" style="bottom:16px"
+            >
+                        <img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/individual_32_icons/en_on_light_bg/10.png" alt="Light Rain Shower" title="Light Rain Shower">
+            </span></td>
+                        <td class="hours-1"><span class="content" style="bottom:16px"
+            >
+                        <img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/individual_32_icons/en_on_light_bg/10.png" alt="Light Rain Shower" title="Light Rain Shower">
+            </span></td>
+                        <td class="hours-1"><span class="content" style="bottom:16px"
+            >
+                        <img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/individual_32_icons/en_on_light_bg/7.png" alt="Light Cloud" title="Light Cloud">
+            </span></td>
+                        <td class="hours-1"><span class="content" style="bottom:-0.39999999999999px"
+            >
+                        <img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/individual_32_icons/en_on_light_bg/10.png" alt="Light Rain Shower" title="Light Rain Shower">
+            </span></td>
+                        <td class="hours-1"><span class="content" style="bottom:-16.8px"
+            >
+                        <img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/individual_32_icons/en_on_light_bg/7.png" alt="Light Cloud" title="Light Cloud">
+            </span></td>
+                        <td class="hours-1"><span class="content" style="bottom:-33.2px"
+            >
+                        <img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/individual_32_icons/en_on_light_bg/2.png" alt="Partly Cloudy" title="Partly Cloudy">
+            </span></td>
+                        <td class="hours-1"><span class="content" style="bottom:-33.2px"
+            >
+                        <img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/individual_32_icons/en_on_light_bg/7.png" alt="Light Cloud" title="Light Cloud">
+            </span></td>
+                        <td class="hours-1"><span class="content" style="bottom:-49.6px"
+            >
+                        <img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/individual_32_icons/en_on_light_bg/2.png" alt="Partly Cloudy" title="Partly Cloudy">
+            </span></td>
+                        <td class="hours-1"><span class="content" style="bottom:-49.6px"
+            >
+                        <img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/individual_32_icons/en_on_light_bg/2.png" alt="Partly Cloudy" title="Partly Cloudy">
+            </span></td>
+                        <td class="hours-1"><span class="content" style="bottom:-49.6px"
+            >
+                        <img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/individual_32_icons/en_on_light_bg/2.png" alt="Partly Cloudy" title="Partly Cloudy">
+            </span></td>
+                        <td class="hours-1"><span class="content" style="bottom:-66px"
+            >
+                        <img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/individual_32_icons/en_on_light_bg/2.png" alt="Partly Cloudy" title="Partly Cloudy">
+            </span></td>
+                        <td class="hours-1"><span class="content" style="bottom:-66px"
+            >
+                        <img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/individual_32_icons/en_on_light_bg/7.png" alt="Light Cloud" title="Light Cloud">
+            </span></td>
+                        <td class="hours-1"><span class="content" style="bottom:-66px"
+            >
+                        <img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/individual_32_icons/en_on_light_bg/7.png" alt="Light Cloud" title="Light Cloud">
+            </span></td>
+                        <td class="hours-1"><span class="content" style="bottom:-66px"
+            >
+                        <img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/individual_32_icons/en_on_light_bg/7.png" alt="Light Cloud" title="Light Cloud">
+            </span></td>
+                        <td class="hours-1"><span class="content" style="bottom:-66px"
+            >
+                        <img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/individual_32_icons/en_on_light_bg/7.png" alt="Light Cloud" title="Light Cloud">
+            </span></td>
+                        <td class="hours-1"><span class="content" style="bottom:-49.6px"
+            >
+                        <img src="http://static.bbci.co.uk/weather/0.5.284/images/icons/individual_32_icons/en_on_light_bg/8.png" alt="Thick Cloud" title="Thick Cloud">
+            </span></td>
+                <td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td>    </tr>
+    <tr class="temperature">
+        <th class="row-title">Temperature (<span class="units-values temperature-units-values"><span data-unit="c" class="temperature-value-unit-c">°C</span><span class="unit-types-separator">/</span><span data-unit="f" class="temperature-value-unit-f">°F</span></span>)</th>
+                               <td class="value hours-1">
+                                                        <span class="content temp-range temp-7-9" style="bottom:92px"
+                        ><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">8<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">46<span class="unit">°F</span></span></span></span>
+                            </td>
+                               <td class="value hours-1">
+                                                        <span class="content temp-range temp-7-9" style="bottom:92px"
+                        ><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">8<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">46<span class="unit">°F</span></span></span></span>
+                            </td>
+                               <td class="value hours-1">
+                                                        <span class="content temp-range temp-7-9" style="bottom:92px"
+                        ><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">8<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">46<span class="unit">°F</span></span></span></span>
+                            </td>
+                               <td class="value hours-1">
+                                                        <span class="content temp-range temp-7-9" style="bottom:75.6px"
+                        ><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">7<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">45<span class="unit">°F</span></span></span></span>
+                            </td>
+                               <td class="value hours-1">
+                                                        <span class="content temp-range temp-4-6" style="bottom:59.2px"
+                        ><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">6<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">43<span class="unit">°F</span></span></span></span>
+                            </td>
+                               <td class="value hours-1">
+                                                        <span class="content temp-range temp-4-6" style="bottom:42.8px"
+                        ><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">5<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">41<span class="unit">°F</span></span></span></span>
+                            </td>
+                               <td class="value hours-1">
+                                                        <span class="content temp-range temp-4-6" style="bottom:42.8px"
+                        ><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">5<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">41<span class="unit">°F</span></span></span></span>
+                            </td>
+                               <td class="value hours-1">
+                                                        <span class="content temp-range temp-4-6" style="bottom:26.4px"
+                        ><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">4<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">39<span class="unit">°F</span></span></span></span>
+                            </td>
+                               <td class="value hours-1">
+                                                        <span class="content temp-range temp-4-6" style="bottom:26.4px"
+                        ><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">4<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">39<span class="unit">°F</span></span></span></span>
+                            </td>
+                               <td class="value hours-1">
+                                                        <span class="content temp-range temp-4-6" style="bottom:26.4px"
+                        ><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">4<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">39<span class="unit">°F</span></span></span></span>
+                            </td>
+                               <td class="value hours-1">
+                                                        <span class="content temp-range temp-1-3" style="bottom:10px"
+                        ><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">3<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">37<span class="unit">°F</span></span></span></span>
+                            </td>
+                               <td class="value hours-1">
+                                                        <span class="content temp-range temp-1-3" style="bottom:10px"
+                        ><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">3<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">37<span class="unit">°F</span></span></span></span>
+                            </td>
+                               <td class="value hours-1">
+                                                        <span class="content temp-range temp-1-3" style="bottom:10px"
+                        ><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">3<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">37<span class="unit">°F</span></span></span></span>
+                            </td>
+                               <td class="value hours-1">
+                                                        <span class="content temp-range temp-1-3" style="bottom:10px"
+                        ><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">3<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">37<span class="unit">°F</span></span></span></span>
+                            </td>
+                               <td class="value hours-1">
+                                                        <span class="content temp-range temp-1-3" style="bottom:10px"
+                        ><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">3<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">37<span class="unit">°F</span></span></span></span>
+                            </td>
+                               <td class="value hours-1">
+                                                        <span class="content temp-range temp-4-6" style="bottom:26.4px"
+                        ><span class="units-values temperature-units-values"><span data-unit="c" class="units-value temperature-value temperature-value-unit-c">4<span class="unit">°C</span></span><span class="unit-types-separator"> </span><span data-unit="f" class="units-value temperature-value temperature-value-unit-f">39<span class="unit">°F</span></span></span></span>
+                            </td>
+               <td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td>    </tr>
+    <tr class="windspeed">
+        <th class="row-title">Wind Speed (<span class="units-values windspeed-units-values"><span data-unit="mph" class="windspeed-value-unit-mph">mph</span><span class="unit-types-separator">/</span><span data-unit="kph" class="windspeed-value-unit-kph">km/h</span></span>)</th>
+                                <td class="hours-1">
+                        <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-e"
+          title="10mph, Easterly"
+          data-tooltip-kph="16km/h, Easterly"
+          data-tooltip-mph="10mph, Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">16<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">10<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">Easterly</span>
+    </span>
+            </td>
+                                <td class="hours-1">
+                        <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-ese"
+          title="14mph, East South Easterly"
+          data-tooltip-kph="23km/h, East South Easterly"
+          data-tooltip-mph="14mph, East South Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">23<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">14<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">East South Easterly</span>
+    </span>
+            </td>
+                                <td class="hours-1">
+                        <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-ene"
+          title="8mph, East North Easterly"
+          data-tooltip-kph="13km/h, East North Easterly"
+          data-tooltip-mph="8mph, East North Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">13<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">8<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">East North Easterly</span>
+    </span>
+            </td>
+                                <td class="hours-1">
+                        <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-ene"
+          title="6mph, East North Easterly"
+          data-tooltip-kph="10km/h, East North Easterly"
+          data-tooltip-mph="6mph, East North Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">10<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">6<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">East North Easterly</span>
+    </span>
+            </td>
+                                <td class="hours-1">
+                        <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-nne"
+          title="6mph, North North Easterly"
+          data-tooltip-kph="10km/h, North North Easterly"
+          data-tooltip-mph="6mph, North North Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">10<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">6<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">North North Easterly</span>
+    </span>
+            </td>
+                                <td class="hours-1">
+                        <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-ne"
+          title="8mph, North Easterly"
+          data-tooltip-kph="13km/h, North Easterly"
+          data-tooltip-mph="8mph, North Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">13<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">8<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">North Easterly</span>
+    </span>
+            </td>
+                                <td class="hours-1">
+                        <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-nne"
+          title="8mph, North North Easterly"
+          data-tooltip-kph="13km/h, North North Easterly"
+          data-tooltip-mph="8mph, North North Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">13<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">8<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">North North Easterly</span>
+    </span>
+            </td>
+                                <td class="hours-1">
+                        <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-nne"
+          title="7mph, North North Easterly"
+          data-tooltip-kph="11km/h, North North Easterly"
+          data-tooltip-mph="7mph, North North Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">11<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">7<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">North North Easterly</span>
+    </span>
+            </td>
+                                <td class="hours-1">
+                        <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-ne"
+          title="7mph, North Easterly"
+          data-tooltip-kph="11km/h, North Easterly"
+          data-tooltip-mph="7mph, North Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">11<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">7<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">North Easterly</span>
+    </span>
+            </td>
+                                <td class="hours-1">
+                        <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-ne"
+          title="6mph, North Easterly"
+          data-tooltip-kph="10km/h, North Easterly"
+          data-tooltip-mph="6mph, North Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">10<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">6<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">North Easterly</span>
+    </span>
+            </td>
+                                <td class="hours-1">
+                        <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-ne"
+          title="7mph, North Easterly"
+          data-tooltip-kph="11km/h, North Easterly"
+          data-tooltip-mph="7mph, North Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">11<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">7<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">North Easterly</span>
+    </span>
+            </td>
+                                <td class="hours-1">
+                        <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-ne"
+          title="8mph, North Easterly"
+          data-tooltip-kph="13km/h, North Easterly"
+          data-tooltip-mph="8mph, North Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">13<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">8<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">North Easterly</span>
+    </span>
+            </td>
+                                <td class="hours-1">
+                        <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-ene"
+          title="9mph, East North Easterly"
+          data-tooltip-kph="14km/h, East North Easterly"
+          data-tooltip-mph="9mph, East North Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">14<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">9<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">East North Easterly</span>
+    </span>
+            </td>
+                                <td class="hours-1">
+                        <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-ene"
+          title="9mph, East North Easterly"
+          data-tooltip-kph="14km/h, East North Easterly"
+          data-tooltip-mph="9mph, East North Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">14<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">9<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">East North Easterly</span>
+    </span>
+            </td>
+                                <td class="hours-1">
+                        <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-ene"
+          title="9mph, East North Easterly"
+          data-tooltip-kph="14km/h, East North Easterly"
+          data-tooltip-mph="9mph, East North Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">14<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">9<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">East North Easterly</span>
+    </span>
+            </td>
+                                <td class="hours-1">
+                        <span class="wind wind-speed windrose-icon windrose-icon-40 wind-direction-e"
+          title="9mph, Easterly"
+          data-tooltip-kph="14km/h, Easterly"
+          data-tooltip-mph="9mph, Easterly">
+        <span class="speed"><span class="units-values windspeed-units-values"><span data-unit="kph" class="units-value windspeed-value windspeed-value-unit-kph">14<span class="unit">km/h</span></span><span class="unit-types-separator"> </span><span data-unit="mph" class="units-value windspeed-value windspeed-value-unit-mph">9<span class="unit">mph</span></span></span></span>
+        <span class="description blq-hide">Easterly</span>
+    </span>
+            </td>
+               <td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td>    </tr>
+    <tr class="wind-direction">
+        <th class="row-title">Wind Direction</th>
+                                <td class="hours-1">
+                                    <abbr title="Easterly">E</abbr>
+                            </td>
+                                <td class="hours-1">
+                                    <abbr title="East South Easterly">ESE</abbr>
+                            </td>
+                                <td class="hours-1">
+                                    <abbr title="East North Easterly">ENE</abbr>
+                            </td>
+                                <td class="hours-1">
+                                    <abbr title="East North Easterly">ENE</abbr>
+                            </td>
+                                <td class="hours-1">
+                                    <abbr title="North North Easterly">NNE</abbr>
+                            </td>
+                                <td class="hours-1">
+                                    <abbr title="North Easterly">NE</abbr>
+                            </td>
+                                <td class="hours-1">
+                                    <abbr title="North North Easterly">NNE</abbr>
+                            </td>
+                                <td class="hours-1">
+                                    <abbr title="North North Easterly">NNE</abbr>
+                            </td>
+                                <td class="hours-1">
+                                    <abbr title="North Easterly">NE</abbr>
+                            </td>
+                                <td class="hours-1">
+                                    <abbr title="North Easterly">NE</abbr>
+                            </td>
+                                <td class="hours-1">
+                                    <abbr title="North Easterly">NE</abbr>
+                            </td>
+                                <td class="hours-1">
+                                    <abbr title="North Easterly">NE</abbr>
+                            </td>
+                                <td class="hours-1">
+                                    <abbr title="East North Easterly">ENE</abbr>
+                            </td>
+                                <td class="hours-1">
+                                    <abbr title="East North Easterly">ENE</abbr>
+                            </td>
+                                <td class="hours-1">
+                                    <abbr title="East North Easterly">ENE</abbr>
+                            </td>
+                                <td class="hours-1">
+                                    <abbr title="Easterly">E</abbr>
+                            </td>
+               <td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td>    </tr>
+    </tbody>
+    <tfoot>
+        <tr class="humidity">
+            <th class="row-title">Humidity</th>
+                            <td class="value hours-1">
+                                            61%
+                                    </td>
+                            <td class="value hours-1">
+                                            58%
+                                    </td>
+                            <td class="value hours-1">
+                                            62%
+                                    </td>
+                            <td class="value hours-1">
+                                            69%
+                                    </td>
+                            <td class="value hours-1">
+                                            81%
+                                    </td>
+                            <td class="value hours-1">
+                                            85%
+                                    </td>
+                            <td class="value hours-1">
+                                            91%
+                                    </td>
+                            <td class="value hours-1">
+                                            93%
+                                    </td>
+                            <td class="value hours-1">
+                                            94%
+                                    </td>
+                            <td class="value hours-1">
+                                            96%
+                                    </td>
+                            <td class="value hours-1">
+                                            98%
+                                    </td>
+                            <td class="value hours-1">
+                                            97%
+                                    </td>
+                            <td class="value hours-1">
+                                            97%
+                                    </td>
+                            <td class="value hours-1">
+                                            97%
+                                    </td>
+                            <td class="value hours-1">
+                                            97%
+                                    </td>
+                            <td class="value hours-1">
+                                            97%
+                                    </td>
+                        <td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td>        </tr>
+        <tr class="visibility">
+            <th class="row-title">Visibility (E = Excellent, VG = Very Good, G = Good, M = Moderate, P = Poor, VP = Very Poor)</th>
+                            <td class="value hours-1"
+                    ><abbr title="Good">G</abbr
+                    ></td>
+                            <td class="value hours-1"
+                    ><abbr title="Good">G</abbr
+                    ></td>
+                            <td class="value hours-1"
+                    ><abbr title="Good">G</abbr
+                    ></td>
+                            <td class="value hours-1"
+                    ><abbr title="Good">G</abbr
+                    ></td>
+                            <td class="value hours-1"
+                    ><abbr title="Good">G</abbr
+                    ></td>
+                            <td class="value hours-1"
+                    ><abbr title="Good">G</abbr
+                    ></td>
+                            <td class="value hours-1"
+                    ><abbr title="Good">G</abbr
+                    ></td>
+                            <td class="value hours-1"
+                    ><abbr title="Good">G</abbr
+                    ></td>
+                            <td class="value hours-1"
+                    ><abbr title="Good">G</abbr
+                    ></td>
+                            <td class="value hours-1"
+                    ><abbr title="Good">G</abbr
+                    ></td>
+                            <td class="value hours-1"
+                    ><abbr title="Moderate">M</abbr
+                    ></td>
+                            <td class="value hours-1"
+                    ><abbr title="Good">G</abbr
+                    ></td>
+                            <td class="value hours-1"
+                    ><abbr title="Moderate">M</abbr
+                    ></td>
+                            <td class="value hours-1"
+                    ><abbr title="Moderate">M</abbr
+                    ></td>
+                            <td class="value hours-1"
+                    ><abbr title="Moderate">M</abbr
+                    ></td>
+                            <td class="value hours-1"
+                    ><abbr title="Moderate">M</abbr
+                    ></td>
+                        <td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td>        </tr>
+        <tr class="pressure">
+            <th class="row-title">Pressure (Millibars)</th>
+                            <td class="value hours-1">
+                                            1012                                    </td>
+                            <td class="value hours-1">
+                                            1012                                    </td>
+                            <td class="value hours-1">
+                                            1012                                    </td>
+                            <td class="value hours-1">
+                                            1012                                    </td>
+                            <td class="value hours-1">
+                                            1013                                    </td>
+                            <td class="value hours-1">
+                                            1013                                    </td>
+                            <td class="value hours-1">
+                                            1014                                    </td>
+                            <td class="value hours-1">
+                                            1014                                    </td>
+                            <td class="value hours-1">
+                                            1014                                    </td>
+                            <td class="value hours-1">
+                                            1014                                    </td>
+                            <td class="value hours-1">
+                                            1014                                    </td>
+                            <td class="value hours-1">
+                                            1014                                    </td>
+                            <td class="value hours-1">
+                                            1014                                    </td>
+                            <td class="value hours-1">
+                                            1014                                    </td>
+                            <td class="value hours-1">
+                                            1014                                    </td>
+                            <td class="value hours-1">
+                                            1014                                    </td>
+                        <td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td><td class="hours-1 empty">&nbsp;</td>        </tr>
+    </tfoot>
+</table>
+        </div>
+    </div>
+
+<div id="advanced-weather">
+</div>
+    <span class="arrow"></span>
+    <h2></h2>
+
+    <ul>
+        <li>
+            <span class="label">Humidity</span>
+            <span class="humidity value"></span>
+        </li>
+        <li>
+            <span class="label">Visibility</span>
+            <span class="visibility value"></span>
+        </li>
+        <li>
+            <span class="label">Pressure (Millibars)</span>
+            <span class="pressure value"></span>
+        </li>
+        <li>
+            <span class="label">Wind Direction</span>
+            <span class="wind-direction value"></span>
+        </li>
+        <li>
+            <span class="label">Wind Speed (<span class="units-values windspeed-units-values"><span data-unit="mph" class="windspeed-value-unit-mph">mph</span><span class="unit-types-separator">/</span><span data-unit="kph" class="windspeed-value-unit-kph">km/h</span></span>)</span>
+            <span class="wind-speed value"></span>
+        </li>
+    </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body> </html>
