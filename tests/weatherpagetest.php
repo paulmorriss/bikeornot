@@ -5,7 +5,7 @@ class weatherPageTest extends PHPUnit_Framework_TestCase
 {
 	public function testGetIndex() {
 		$p = new weatherPage();
-		$this->assertEquals($p->getIndex(2,1), 0);
+		$this->assertEquals($p->getIndex(2,1), 0); //Boundary condition
 		$this->assertEquals($p->getIndex(1,1), 1);
 		$this->assertEquals($p->getIndex(3,3+HOUR_SLOTS), 2);
 		$this->assertEquals($p->getIndex(3,3+(HOUR_SLOTS*2)), 3);
