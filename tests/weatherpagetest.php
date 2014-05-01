@@ -1,5 +1,5 @@
 <?php
-include_once('bikeornot.php');
+include_once('include.php');
 
 class weatherPageTest extends PHPUnit_Framework_TestCase 
 {

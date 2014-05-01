@@ -1,13 +1,4 @@
 <?php 
-function getGet($get, $key, $defaultValue) {
-	//Gets the given key from the query string via $_GET (passed in to aid testing). Handles empty or non-existent variables
-	if (isset($_GET[$key]) && $_GET[$key] !== "") {
-		return $_GET[$key];
-	} else {
-		return $defaultValue;
-	}
-}
-
 define('PREFS_COOKIE_NAME', 'prefs');
 define ('PREFS_VERSION','1.0');
 //Defaults
@@ -107,19 +98,28 @@ class prefs {
 	public $bikingWeather; //The full list of weather words
 	public $simplifiedBikingWeather; //The simplified options
 
+	private function getGet($get, $key, $defaultValue) {
+		//Gets the given key from the query string via $_GET (passed in to aid testing). Handles empty or non-existent variables
+		if (isset($_GET[$key]) && $_GET[$key] !== "") {
+			return $_GET[$key];
+		} else {
+			return $defaultValue;
+		}
+	}
+	
 	function __construct($get) {
 	//if $_GET fields present then use those
 	//otherwise sets default values for the preferences
 		global $bikingWeatherDefault;
 		
 		//Get query parameters or defaults
-		$this->postcode = strtolower(getGet($get, POSTCODE_PARAM,DEFAULT_POSTCODE));
+		$this->postcode = strtolower($this->getGet($get, POSTCODE_PARAM,DEFAULT_POSTCODE));
 	
-		$this->minTemp = getGet($get, MIN_TEMP_PARAM, DEFAULT_MIN_TEMP);
-		$this->maxTemp = getGet($get, MAX_TEMP_PARAM, DEFAULT_MAX_TEMP);
+		$this->minTemp = $this->getGet($get, MIN_TEMP_PARAM, DEFAULT_MIN_TEMP);
+		$this->maxTemp = $this->getGet($get, MAX_TEMP_PARAM, DEFAULT_MAX_TEMP);
 	
-		$this->firstHour = getGet($get, FIRST_HOUR_PARAM, DEFAULT_FIRST_HOUR);
-		$this->secondHour = getGet($get, SECOND_HOUR_PARAM, DEFAULT_SECOND_HOUR);
+		$this->firstHour = $this->getGet($get, FIRST_HOUR_PARAM, DEFAULT_FIRST_HOUR);
+		$this->secondHour = $this->getGet($get, SECOND_HOUR_PARAM, DEFAULT_SECOND_HOUR);
 	
 		//Get acceptable weather words
 		$this->bikingWeather = array();
@@ -157,5 +157,81 @@ class prefs {
 //public bikeOrNot
 //given the parameters
 }
+
+
+//Gap between hours on page, started off as 3, but then page changed
+define('HOUR_SLOTS', 1);
+
+//URL parameter names
+define ('POSTCODE_PARAM',"postcode");
+define ('MIN_TEMP_PARAM',"mintemp");
+define ('MAX_TEMP_PARAM',"maxtemp");
+define ('FIRST_HOUR_PARAM',"firsthour");
+define ('SECOND_HOUR_PARAM',"secondhour");
+define ('GOOD_WEATHER_PARAM', "goodweather");
+
+
+class weatherPage {
+/**
+ * Gets the index in the table containing weather symbols and temps
+ * The images with the words as a title, are in a table with one hour (aka HOUR_SLOTS) increments
+ * Returns 0 if data not available, e.g. 6am required and the earliest slot is 9am
+ *
+ * @param int $startHour The first hour on the weather page
+ * @param int $requiredHour The hour slot required
+ * @return int The index (i.e. column) in the table of weather slots on the webpage
+ */	
+	public function getIndex($startHour, $requiredHour) {
+		//
+		if ($startHour <= $requiredHour) {
+			return (($requiredHour - $startHour) / HOUR_SLOTS) + 1;
+		} else {
+			return 0;
+		}
+		
+	}
+	
+/**
+ * Find the image for the weather and get the title attribute 
+ *
+ * @param mixed $xpath The xpath object for the webpage
+ * @param int $index The index (i.e. column) in the table of weather slots on the webpage
+ * @return string The description of that weather type or "(not found)" if no such slot on page
+ */	
+	public function getWeatherWords($xpath, $index) {
+		
+		
+		$weatherWordTitle = $xpath->query('//*[@id="hourly"]/div[3]/table/tbody/tr[1]/td['.strval($index).']/span/img/@title');#
+		if ($weatherWordTitle->length <> 0) { /*This means we found it */
+			$weatherWords = $weatherWordTitle->item(0)->nodeValue;
+		} else {
+			return "(not found)";
+		}
+	
+		if ($weatherWords) {
+			return(strtolower($weatherWords));
+		} else {
+			return "(not found)";
+		}
+		
+	}
+	
+	public function getTemperature($xpath, $dom, $index) {
+		//Find the temperature figure
+		$temperatureTitle = $xpath->query('//*[@id="hourly"]/div[3]/table/tbody/tr[2]/td['.strval($index).']/span/span/span[1]/text()');
+		if ($temperatureTitle->length <> 0) { /*This means we found it */
+			$temperature = $temperatureTitle->item(0);
+		} else {
+			return "(not found)";
+		}
+		if ($temperature) {
+			return($dom->saveHTML($temperature));
+		} else {
+			return "(not found)";
+		}
+	}
+	
+}
+
 
 ?>
