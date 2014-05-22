@@ -1,8 +1,19 @@
 <?php
 include_once('include.php');
 
+
 class weatherPageTest extends PHPUnit_Framework_TestCase 
 {
+	public function testGetStartHour() {
+		$p = new weatherPage();
+		$pageHTML = file_get_contents(realpath(dirname(__FILE__)).'/staticpage.html');
+		$dom = new DomDocument();
+		
+		$dom->loadHTML($pageHTML);
+		$xpath = new DOMXPath($dom);
+		$this->assertEquals($p->getStartHour($xpath, $dom), 14);
+	}
+
 	public function testGetIndex() {
 		$p = new weatherPage();
 		$this->assertEquals($p->getIndex(2,1), 0); //Boundary condition

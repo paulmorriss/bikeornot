@@ -15,9 +15,7 @@ function optionHours($selectedHour) {
 }
 
 //Get current preferences, if any
-$storedPrefs = new prefs();
-//Empty version is an indicator that nothing is set
-$storedPrefs->version="";
+$storedPrefs = new prefs(array());
 if (array_key_exists(PREFS_COOKIE_NAME, $_COOKIE)) {
 	$storedPrefs = unserialize($_COOKIE[PREFS_COOKIE_NAME]);
 }
@@ -38,13 +36,13 @@ if (array_key_exists(PREFS_COOKIE_NAME, $_COOKIE)) {
 <ul>
 
 <li><label for="postcode">First part of your postcode (UK only) e.g. HP12</label>
-<input type="text" name="postcode" id="postcode" size=5 value="<?php if (strcmp($storedPrefs->version,"")) { echo strtoupper($storedPrefs->postcode); }?>">
+<input type="text" name="postcode" id="postcode" size=5 value="<?php  echo strtoupper($storedPrefs->postcode); ?>">
 </li>
 <li><label for="mintemp">Minimum temperature in &deg;C</label>
-<input type="number" name="mintemp" id="mintemp" size=5 value="<?php if (strcmp($storedPrefs->version,"")) { echo strtoupper($storedPrefs->minTemp); }?>" >
+<input type="number" name="mintemp" id="mintemp" size=5 value="<?php echo $storedPrefs->minTemp; ?>" >
 </li>
 <li><label for="maxtemp">Maximum temperature in &deg;C</label>
-<input type="number" name="maxtemp" id="maxtemp" size=5 value="<?php if (strcmp($storedPrefs->version,"")) { echo strtoupper($storedPrefs->maxTemp); }?>" >
+<input type="number" name="maxtemp" id="maxtemp" size=5 value="<?php  echo $storedPrefs->maxTemp; ?>" >
 </li>
 <li><label for="firsthour">First hour</label>
 <select name="firsthour">
@@ -62,13 +60,13 @@ if (array_key_exists(PREFS_COOKIE_NAME, $_COOKIE)) {
 
 Cycling weather:
 <?php 
-foreach($simplifiedChoices as $internal => $readable) {
+foreach(prefs::$simplifiedWeatherTypes as $internal => $readable) {
 	?>
     <li>
 <?php
 	echo '<label for="'.$internal.'">'.$readable.'</label>';
 	echo '<input name="'.$internal.'" type="checkbox" value="'.$internal.'"';
-	if (strcmp($storedPrefs->weatherChoices[$internal],"")) {
+	if ($storedPrefs->simplifiedWeatherChoices[$internal]) {
 		echo ' checked="checked"';
 	}
 	echo '>';

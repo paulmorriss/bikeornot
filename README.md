@@ -1,5 +1,7 @@
 Bike or not
 
+[![Build Status](https://travis-ci.org/paulmorriss/bikeornot.svg?branch=master)](https://travis-ci.org/paulmorriss/bikeornot)
+
 This allows wimpy cyclists to work out whether to take their bike or not on their regular commute, by looking at the BBC weather forecast.
 It looks at the weather conditions and temperature during the commute times, and works out whether you should take your bike or not.
 Provided by BBC Weather http://bbc.co.uk/weather, but not officially connected with the BBC.
@@ -7,10 +9,8 @@ Provided by BBC Weather http://bbc.co.uk/weather, but not officially connected w
 Current state:
 Output is for debug. Query parameters work.
 Preferences can be specified and are stored in a cookie.
-Preferences class now used, but simplified choices not stored yet.
 
 Future work:
-Continue refactor to make code object orientated
 Better display (currently displays actual temperature and weather for debugging)
 Preferences screen looks better on mobile
 API?
