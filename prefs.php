@@ -1,7 +1,33 @@
 <?php
 //Display preferences in a form
 include_once('include.php');
+?>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Is it OKto.bike?</title>
 
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+   
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+<?php
 function optionHours($selectedHour) {
 	
 	//Print options for a 24 hour slots, and if specified, set value to the selected hour
@@ -20,14 +46,11 @@ if (array_key_exists(PREFS_COOKIE_NAME, $_COOKIE)) {
 	$storedPrefs = unserialize($_COOKIE[PREFS_COOKIE_NAME]);
 }
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Bike or not - preferences</title>
-</head>
+    <div class="container">
 
-<body>
+      <div class="starter-template">
+<h1>Is it OKto.bike?</h1>
+<h2>Set your preferences</h2>
 <form action="setprefs.php" method="post">
 
 
@@ -57,8 +80,10 @@ if (array_key_exists(PREFS_COOKIE_NAME, $_COOKIE)) {
 </select>
 </li>
 
+</ul>
 
-Cycling weather:
+<h3>Cycling weather:</h3>
+<ul>
 <?php 
 foreach(prefs::$simplifiedWeatherTypes as $internal => $readable) {
 	?>
@@ -79,5 +104,10 @@ foreach(prefs::$simplifiedWeatherTypes as $internal => $readable) {
 </fieldset>
 <input type="submit" name="save" value="Save">
 </form>
-</body>
+
+  </div>
+
+    </div><!-- /.container -->
+
+  </body>
 </html>

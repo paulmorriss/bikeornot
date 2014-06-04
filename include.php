@@ -152,12 +152,12 @@ class prefs {
 	
 	function checkBikingWeather($weatherWords, $temperature) {
 	//checks if this is biking weather according to user preferences
-		if (!array_key_exists(strtolower($weatherWords), prefs::$bikingWeatherDefault) && strcmp($weatherWords, "(not found)")) {
+		if (!array_key_exists(strtolower($weatherWords), prefs::$bikingWeatherDefault) && strcmp($weatherWords, "")) {
 			//Let me know if this is a new word, and assume it's not biking weather
 			mail("paulmorriss@iname.com","new weather word: ".$weatherWords,"From: Paul Morriss <paulmorriss@iname.com>\r\n");
 			return false;
 		}
-		if (!array_key_exists($weatherWords, $this->bikingWeather)) {
+		if (!array_key_exists($weatherWords, $this->bikingWeather) || !strcmp($temperature,"")) {
 			return false;
 		} else if ($this->bikingWeather[$weatherWords] && ($temperature >= $this->minTemp) && ($temperature <= $this->maxTemp)) {
 			return true;
@@ -238,7 +238,7 @@ class weatherPage {
  *
  * @param mixed $xpath The xpath object for the webpage
  * @param int $index The index (i.e. column) in the table of weather slots on the webpage
- * @return string The description of that weather type or "(not found)" if no such slot on page
+ * @return string The description of that weather type or "" if no such slot on page
  */	
 	public function getWeatherWords($xpath, $index) {
 		
@@ -247,13 +247,13 @@ class weatherPage {
 		if ($weatherWordTitle->length <> 0) { /*This means we found it */
 			$weatherWords = $weatherWordTitle->item(0)->nodeValue;
 		} else {
-			return "(not found)";
+			return "";
 		}
 	
 		if ($weatherWords) {
 			return(strtolower($weatherWords));
 		} else {
-			return "(not found)";
+			return "";
 		}
 		
 	}
@@ -264,7 +264,7 @@ class weatherPage {
  * @param mixed $xpath The xpath object for the webpage
  * @param mixed $dom The dom object for the webpage
  * @param int $index The index (i.e. column) in the table of weather slots on the webpage
- * @return mixed The temperature or "(not found)" if no such slot on page
+ * @return mixed The temperature or "" if no such slot on page
  */	
 	public function getTemperature($xpath, $dom, $index) {
 		//Find the temperature figure
@@ -272,12 +272,12 @@ class weatherPage {
 		if ($temperatureTitle->length <> 0) { /*This means we found it */
 			$temperature = $temperatureTitle->item(0);
 		} else {
-			return "(not found)";
+			return "";
 		}
 		if ($temperature) {
 			return($dom->saveHTML($temperature));
 		} else {
-			return "(not found)";
+			return "";
 		}
 	}
 	
